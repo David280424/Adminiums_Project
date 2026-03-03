@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:padding="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Panel Administrativo"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
+
+                <TextView
+                    android:id="@+id/tvNombreAdmin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Administrador - Condominio Los Pinos"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorTextSecondary"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Salir"
+                android:backgroundTint="@color/colorAccent"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$ "
+                            android:textSize="20sp"
+                            android:textColor="@color/colorGreen"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Estado de Cuenta de Cuotas"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimary"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cobros del Mes"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvTotalRecaudado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$45,800"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total recaudado"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/gray_medium"
+                        android:layout_marginBottom="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cuotas Pendientes"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"/>
+
+                            <TextView
+                                android:id="@+id/tvCuotasPendientes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="12"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorRed"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Residentes con deuda"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorTextSecondary"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pagos al Día"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"/>
+
+                            <TextView
+                                android:id="@+id/tvPagosAlDia"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="92%"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorGreen"/>
+
+                            <TextView
+                                android:id="@+id/tvResidentesPagados"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="144 de 156 residentes"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorTextSecondary"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cuota mensual promedio"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="$450.00"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total residentes"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"/>
+
+                            <TextView
+                                android:id="@+id/tvTotalResidentes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="156"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🗺️ Mapa de Ocupación de Amenidades"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Piscina -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Piscina" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="14sp"/>
+                        <TextView android:id="@+id/tvPiscinaReservas" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="6 / 8 reservadas"
+                            android:textColor="@color/colorTextSecondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ProgressBar android:id="@+id/progressPiscina" style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent" android:layout_height="8dp"
+                        android:max="100" android:progress="75"
+                        android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Gimnasio -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Gimnasio" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="14sp"/>
+                        <TextView android:id="@+id/tvGimnasioReservas" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="4 / 10 reservadas"
+                            android:textColor="@color/colorTextSecondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ProgressBar android:id="@+id/progressGimnasio" style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent" android:layout_height="8dp"
+                        android:max="100" android:progress="40"
+                        android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Salón de Fiestas -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Salón de Fiestas" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="14sp"/>
+                        <TextView android:id="@+id/tvSalonReservas" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="1 / 1 reservadas"
+                            android:textColor="@color/colorTextSecondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ProgressBar android:id="@+id/progressSalon" style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent" android:layout_height="8dp"
+                        android:max="100" android:progress="100"
+                        android:progressTint="@color/colorRed"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Area BBQ -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Área BBQ" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="14sp"/>
+                        <TextView android:id="@+id/tvBBQReservas" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="6 / 10 reservadas"
+                            android:textColor="@color/colorTextSecondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <ProgressBar android:id="@+id/progressBBQ" style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent" android:layout_height="8dp"
+                        android:max="100" android:progress="60"
+                        android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="8dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
