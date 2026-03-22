@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/res/layout/item_residente.xml -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Info del residente -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvResidenteNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre Residente"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/tvResidenteUnidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unidad: 101"
+                android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary" />
+
+            <TextView
+                android:id="@+id/tvResidenteBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adeudo: $0.00"
+                android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary" />
+        </LinearLayout>
+
+        <!-- Chip de estado -->
+        <TextView
+            android:id="@+id/tvResidenteEstado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Al día"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:background="@color/colorGreen" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
