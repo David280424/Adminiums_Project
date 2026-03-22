@@ -1,226 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:padding="20dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:title="🛡️ Control de Acceso"
+            android:titleTextColor="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvNombreVigilante"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🛡️ Control de Acceso"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:id="@+id/tvNombreVigilante"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vigilante - Turno Tarde"
-                    android:textSize="13sp"
-                    android:textColor="@color/colorTextSecondary"/>
-            </LinearLayout>
+                android:text="Vigilante"
+                android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="32dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
                 android:text="Salir"
                 android:backgroundTint="@color/colorAccent"
                 android:textColor="@color/white"
-                android:textSize="12sp"/>
-        </LinearLayout>
+                android:textSize="11sp"/>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnVisitantes"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="📱 Visitantes"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/white"
-                android:textSize="13sp"/>
-
-            <Button
-                android:id="@+id/btnResidentes"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:text="👤 Residentes"
-                android:backgroundTint="@color/colorCard"
-                android:textColor="@color/colorPrimary"
-                android:textSize="13sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutVisitantes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingTop="0dp">
-
-            <androidx.cardview.widget.CardView
+            <!-- ── TABS ──────────────────────────────────────────────────── -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:background="@color/colorPrimary">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTabManual"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="✋ Manual"
+                    app:backgroundTint="@color/white"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Validar Visitante con QR"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTabQR"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:text="📱 Escanear QR"
+                    app:backgroundTint="@color/colorAccent"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="El visitante debe mostrar el código QR que le envió el residente"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="16dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTabHistorial"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="📋 Historial"
+                    app:backgroundTint="@color/colorAccent"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp"/>
+            </LinearLayout>
 
-                    <Button
-                        android:id="@+id/btnEscanearQR"
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
-                        android:text="📷 Escanear Código QR\nToca para activar la cámara"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:textColor="@color/white"
-                        android:layout_marginBottom="16dp"/>
-
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvResultadoQR"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:textColor="@color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutResidentes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingTop="0dp"
-            android:visibility="gone">
-
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <!-- ══════════════════════════════════════════════════════════
+                     TAB 1: REGISTRO MANUAL
+                ══════════════════════════════════════════════════════════ -->
                 <LinearLayout
+                    android:id="@+id/layoutManual"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Registrar Entrada de Residente"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Busca al residente por nombre o unidad"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="12dp"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etBuscarResidente"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="12dp">
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Buscar por nombre o unidad..."/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                    <Button
-                        android:id="@+id/btnBuscarResidente"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="🔍 Buscar"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:textColor="@color/white"
-                        android:layout_marginBottom="12dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Registro Manual de Entrada"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginBottom="4dp"/>
 
-                    <TextView
-                        android:id="@+id/tvResultadoResidente"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Busca al residente por nombre o número de unidad"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"
+                                android:layout_marginBottom="16dp"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:hint="Nombre o número de unidad...">
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etBuscarManual"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:imeOptions="actionSearch"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnBuscarManual"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:text="🔍 Buscar residente"
+                                app:backgroundTint="@color/colorPrimary"
+                                android:textColor="@color/white"
+                                app:cornerRadius="8dp"/>
+
+                            <ProgressBar
+                                android:id="@+id/progressManual"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:visibility="gone"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Card de confirmación (aparece tras encontrar al residente) -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardConfirmarManual"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="12dp"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="14sp"
-                        android:visibility="gone"
-                        android:background="@color/gray_light"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        app:cardBackgroundColor="@color/white"
+                        android:visibility="gone">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp"
+                            android:gravity="center">
 
-    </LinearLayout>
-</ScrollView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="✅ Residente encontrado"
+                                android:textSize="14sp"
+                                android:textColor="@color/colorGreen"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvResidenteEncontradoNombre"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nombre"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"/>
+
+                            <TextView
+                                android:id="@+id/tvResidenteEncontradoUnidad"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Unidad"
+                                android:textSize="14sp"
+                                android:textColor="@color/colorTextSecondary"
+                                android:layout_marginBottom="16dp"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnConfirmarEntrada"
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:text="✅ Confirmar entrada"
+                                app:backgroundTint="@color/colorGreen"
+                                android:textColor="@color/white"
+                                android:textSize="15sp"
+                                app:cornerRadius="10dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- ══════════════════════════════════════════════════════════
+                     TAB 2: ESCANEO QR
+                ══════════════════════════════════════════════════════════ -->
+                <LinearLayout
+                    android:id="@+id/layoutQR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Escanear QR de Acceso"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginBottom="4dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sirve tanto para el QR del residente como para QR de visitante"
+                                android:textSize="12sp"
+                                android:textColor="@color/colorTextSecondary"
+                                android:layout_marginBottom="16dp"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnEscanearQR"
+                                android:layout_width="match_parent"
+                                android:layout_height="80dp"
+                                android:text="📷 Activar cámara y escanear"
+                                app:backgroundTint="@color/colorPrimary"
+                                android:textColor="@color/white"
+                                android:textSize="15sp"
+                                app:cornerRadius="10dp"
+                                android:layout_marginBottom="16dp"/>
+
+                            <ProgressBar
+                                android:id="@+id/progressQR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:visibility="gone"
+                                android:layout_marginBottom="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvResultadoQR"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="16dp"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:visibility="gone"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- ══════════════════════════════════════════════════════════
+                     TAB 3: HISTORIAL DEL DÍA
+                ══════════════════════════════════════════════════════════ -->
+                <LinearLayout
+                    android:id="@+id/layoutHistorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="4dp">
+
+                                <TextView
+                                    android:id="@+id/tvFechaHistorial"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Entradas de hoy"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/colorPrimary"/>
+
+                                <TextView
+                                    android:id="@+id/tvTotalEntradas"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 entradas"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/colorTextSecondary"/>
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/progressHistorial"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:visibility="gone"
+                                android:layout_marginBottom="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvSinAccesos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Sin registros por ahora"
+                                android:textSize="13sp"
+                                android:textColor="@color/colorTextSecondary"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:visibility="gone"/>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvHistorial"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

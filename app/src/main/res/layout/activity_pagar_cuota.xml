@@ -1,45 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:padding="20dp"
-            android:orientation="vertical">
+            android:title="Pagar Cuota"
+            android:titleTextColor="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="← Regresar"
-                android:backgroundTint="@android:color/transparent"
-                android:textColor="@color/white"
-                android:textSize="13sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pagar Cuota"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registro de pago mensual"
-                android:textSize="13sp"
-                android:textColor="@color/colorTextSecondary"/>
-        </LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,54 +30,68 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Info del residente -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
-
+                app:cardElevation="4dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp"
+                    android:padding="20dp"
                     android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvNombreResidente"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/tvUnidadResidente"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unidad"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginBottom="16dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Monto a pagar"
-                        android:textSize="16sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="8dp"/>
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"/>
 
                     <TextView
                         android:id="@+id/tvMontoCuota"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$450.00"
+                        android:text="$0.00"
                         android:textSize="40sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
+                        android:textColor="@color/colorPrimary"/>
 
                     <TextView
                         android:id="@+id/tvFechaVence"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vence: 15/02/2026"
-                        android:textSize="14sp"
-                        android:textColor="@color/colorRed"
-                        android:layout_marginBottom="8dp"/>
+                        android:text="Vence: --"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorRed"/>
 
                     <TextView
                         android:id="@+id/tvBalanceActual"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Balance actual: $1,250.00"
-                        android:textSize="14sp"
+                        android:text="Balance: $0.00"
+                        android:textSize="13sp"
                         android:textColor="@color/colorTextSecondary"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -107,15 +104,116 @@
                 android:visibility="gone"
                 android:layout_marginBottom="8dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPagar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="✅ Registrar Pago"
-                android:backgroundTint="@color/colorGreen"
+                app:backgroundTint="@color/colorGreen"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:layout_marginBottom="24dp"
+                app:cornerRadius="12dp"/>
+
+            <!-- Recibo (visible tras pagar) -->
+            <LinearLayout
+                android:id="@+id/layoutRecibo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardRecibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@color/white">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ADMINIUMS"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimary"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Comprobante de Pago"
+                            android:textSize="13sp"
+                            android:textColor="@color/colorTextSecondary"
+                            android:layout_marginBottom="16dp"/>
+
+                        <TextView
+                            android:id="@+id/tvReciboEstado"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✅ PAGO CONFIRMADO"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorGreen"
+                            android:layout_marginBottom="16dp"/>
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp"
+                            android:background="@color/gray_medium" android:layout_marginBottom="16dp"/>
+
+                        <TextView android:id="@+id/tvReciboNombre"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textSize="16sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
+                        <TextView android:id="@+id/tvReciboUnidad"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textSize="13sp" android:textColor="@color/colorTextSecondary"
+                            android:layout_marginBottom="12dp"/>
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Monto pagado" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                        <TextView android:id="@+id/tvReciboMonto"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textSize="34sp" android:textStyle="bold" android:textColor="@color/colorPrimary"
+                            android:layout_marginBottom="12dp"/>
+
+                        <TextView android:id="@+id/tvReciboFecha"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                        <TextView android:id="@+id/tvReciboFolio"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Botones de compartir -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCompartirImagen"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="📤 Compartir por WhatsApp / Imagen"
+                    app:backgroundTint="@color/colorGreen"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDescargarPDF"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="📄 Descargar / Compartir PDF"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp"
+                    android:layout_marginBottom="24dp"/>
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

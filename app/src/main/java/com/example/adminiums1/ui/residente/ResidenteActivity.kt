@@ -31,6 +31,10 @@ class ResidenteActivity : AppCompatActivity() {
         binding.btnPagar.setOnClickListener {
             startActivity(Intent(this, PagarCuotaActivity::class.java))
         }
+        // NUEVO: QR fijo del residente para su propia entrada
+        binding.btnMiQR.setOnClickListener {
+            startActivity(Intent(this, MiQRActivity::class.java))
+        }
         binding.btnLogout.setOnClickListener {
             repo.logout()
             startActivity(Intent(this, RolSelectorActivity::class.java))
@@ -48,11 +52,11 @@ class ResidenteActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val usuario = repo.getUsuario(uid)
             usuario?.let {
-                binding.tvBienvenido.text = "Bienvenido, ${it.nombre}"
-                binding.tvUnidad.text = it.unidad
-                binding.tvProximoPago.text = "$ ${"%.2f".format(it.proximoPago)}"
+                binding.tvBienvenido.text      = "Bienvenido, ${it.nombre}"
+                binding.tvUnidad.text          = it.unidad
+                binding.tvProximoPago.text     = "$ ${"%.2f".format(it.proximoPago)}"
                 binding.tvFechaVencimiento.text = it.fechaVencimiento
-                binding.tvBalance.text = "$ ${"%.2f".format(it.balance)}"
+                binding.tvBalance.text         = "$ ${"%.2f".format(it.balance)}"
             }
         }
     }

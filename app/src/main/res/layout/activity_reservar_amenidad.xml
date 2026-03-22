@@ -1,45 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:padding="20dp"
-            android:orientation="vertical">
+            android:title="Reservar Amenidades"
+            android:titleTextColor="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="← Regresar"
-                android:backgroundTint="@android:color/transparent"
-                android:textColor="@color/white"
-                android:textSize="13sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reservar Amenidades"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selecciona fecha y horario"
-                android:textSize="13sp"
-                android:textColor="@color/colorTextSecondary"/>
-        </LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,14 +30,13 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- PASO 1: Amenidad -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
-
+                app:cardElevation="4dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,8 +46,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Selecciona Amenidad"
-                        android:textSize="16sp"
+                        android:text="1. Selecciona una amenidad"
+                        android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="12dp"/>
@@ -73,48 +55,46 @@
                     <GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2"
-                        android:rowCount="2"
-                        android:layout_marginBottom="12dp">
+                        android:columnCount="2">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPiscina"
                             android:layout_width="0dp"
-                            android:layout_height="56dp"
+                            android:layout_height="52dp"
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
-                            android:text="Piscina"
-                            android:backgroundTint="@color/colorPrimary"
+                            android:text="🏊 Piscina"
+                            app:backgroundTint="@color/colorPrimary"
                             android:textColor="@color/white"/>
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnGimnasio"
                             android:layout_width="0dp"
-                            android:layout_height="56dp"
+                            android:layout_height="52dp"
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
-                            android:text="Gimnasio"
-                            android:backgroundTint="@color/gray_medium"
+                            android:text="🏋️ Gimnasio"
+                            app:backgroundTint="@color/gray_medium"
                             android:textColor="@color/colorPrimary"/>
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSalon"
                             android:layout_width="0dp"
-                            android:layout_height="56dp"
+                            android:layout_height="52dp"
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
-                            android:text="Salón de Fiestas"
-                            android:backgroundTint="@color/gray_medium"
+                            android:text="🎉 Salón"
+                            app:backgroundTint="@color/gray_medium"
                             android:textColor="@color/colorPrimary"/>
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnBBQ"
                             android:layout_width="0dp"
-                            android:layout_height="56dp"
+                            android:layout_height="52dp"
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
-                            android:text="Área BBQ"
-                            android:backgroundTint="@color/gray_medium"
+                            android:text="🔥 BBQ"
+                            app:backgroundTint="@color/gray_medium"
                             android:textColor="@color/colorPrimary"/>
                     </GridLayout>
 
@@ -122,55 +102,88 @@
                         android:id="@+id/tvAmenidadSeleccionada"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Selecciona una amenidad..."
-                        android:textSize="13sp"
+                        android:text="Ninguna seleccionada"
+                        android:textSize="12sp"
                         android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- PASO 2: Calendario -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Selecciona Horario"
-                        android:textSize="16sp"
+                        android:text="2. Selecciona una fecha"
+                        android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="8dp"/>
+
+                    <CalendarView
+                        android:id="@+id/calendarView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/tvFechaSeleccionada"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ninguna fecha seleccionada"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- PASO 3: Horarios (aparece dinámicamente) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardHorarios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3. Selecciona un horario"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mantén presionado un horario gris para cancelar tu reserva"
+                        android:textSize="11sp"
+                        android:textColor="@color/colorTextSecondary"
                         android:layout_marginBottom="12dp"/>
 
-                    <Button
-                        android:id="@+id/btnH1"
+                    <!-- Botones de horario generados dinámicamente -->
+                    <LinearLayout
+                        android:id="@+id/layoutHorarios"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="08:00 - 10:00  •  Disponible"
-                        android:backgroundTint="@color/gray_light"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <Button
-                        android:id="@+id/btnH2"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="10:00 - 12:00  •  Disponible"
-                        android:backgroundTint="@color/gray_light"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <Button
-                        android:id="@+id/btnH3"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="12:00 - 14:00  •  Disponible"
-                        android:backgroundTint="@color/gray_light"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <Button
-                        android:id="@+id/btnH4"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="14:00 - 16:00  •  Disponible"
-                        android:backgroundTint="@color/gray_light"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -178,17 +191,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:visibility="gone"/>
-
-                    <Button
-                        android:id="@+id/btnConfirmar"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:text="Confirmar Reservación"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

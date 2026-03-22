@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- app/src/main/AndroidManifest.xml — REEMPLAZA el archivo actual -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/>
 
     <application
         android:name=".AdminiumsApplication"
@@ -17,6 +18,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Adminiums1">
 
+        <!-- FileProvider para compartir imágenes y PDFs -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
         <activity
             android:name=".ui.auth.RolSelectorActivity"
             android:exported="true">
@@ -26,18 +38,42 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.auth.RegistroActivity"  android:exported="false"/>
-        <activity android:name=".ui.auth.LoginActivity"     android:exported="false"/>
+        <activity android:name=".ui.auth.RegistroActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".ui.residente.ResidenteActivity"        android:exported="false"/>
-        <activity android:name=".ui.residente.GenerarQRActivity"        android:exported="false"/>
-        <activity android:name=".ui.residente.ReservarAmenidadActivity" android:exported="false"/>
-        <activity android:name=".ui.residente.PagarCuotaActivity"       android:exported="false"/>
+        <activity android:name=".ui.auth.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".ui.vigilante.VigilanteActivity"        android:exported="false"/>
+        <activity android:name=".ui.residente.ResidenteActivity"
+            android:exported="false"/>
 
-        <activity android:name=".ui.admin.AdminActivity"                android:exported="false"/>
+        <activity android:name=".ui.residente.GenerarQRActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".MainActivity"                          android:exported="false"/>
+        <activity android:name=".ui.residente.ReservarAmenidadActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".ui.residente.PagarCuotaActivity"
+            android:exported="false"/>
+
+        <!-- NUEVA activity -->
+        <activity android:name=".ui.residente.MiQRActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ui.vigilante.VigilanteActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".ui.admin.AdminActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".MainActivity"
+            android:exported="false"/>
+
     </application>
 </manifest>

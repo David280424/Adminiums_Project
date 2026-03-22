@@ -10,25 +10,26 @@ import kotlinx.coroutines.withContext
 class FirebaseRepository {
 
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
+    private val db   = FirebaseFirestore.getInstance()
+
+    // ── Auth ────────────────────────────────────────────────────────────────
 
     suspend fun login(email: String, password: String): Result<String> = withContext(Dispatchers.IO) {
         try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
             Result.success(result.user?.uid ?: "")
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { Result.failure(e) }
     }
 
     fun logout() = auth.signOut()
 
     fun getCurrentUid() = auth.currentUser?.uid
 
+    // ── Usuarios ────────────────────────────────────────────────────────────
+
     suspend fun getUsuario(uid: String): Usuario? = withContext(Dispatchers.IO) {
         try {
-            val doc = db.collection("usuarios").document(uid).get().await()
-            doc.toObject(Usuario::class.java)
+            db.collection("usuarios").document(uid).get().await().toObject(Usuario::class.java)
         } catch (e: Exception) { null }
     }
 
@@ -38,6 +39,15 @@ class FirebaseRepository {
             true
         } catch (e: Exception) { false }
     }
+
+    suspend fun getTodosUsuarios(): List<Usuario> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("usuarios").whereEqualTo("rol", "residente")
+                .get().await().toObjects(Usuario::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    // ── Visitantes ──────────────────────────────────────────────────────────
 
     suspend fun crearVisitante(visitante: Visitante): Boolean = withContext(Dispatchers.IO) {
         try {
@@ -63,6 +73,8 @@ class FirebaseRepository {
         } catch (e: Exception) { null }
     }
 
+    // ── Reservaciones ───────────────────────────────────────────────────────
+
     suspend fun crearReservacion(reservacion: Reservacion): Boolean = withContext(Dispatchers.IO) {
         try {
             val docRef = db.collection("reservaciones").document()
@@ -74,10 +86,11 @@ class FirebaseRepository {
 
     suspend fun getReservaciones(): List<Reservacion> = withContext(Dispatchers.IO) {
         try {
-            val query = db.collection("reservaciones").get().await()
-            query.toObjects(Reservacion::class.java)
+            db.collection("reservaciones").get().await().toObjects(Reservacion::class.java)
         } catch (e: Exception) { emptyList() }
     }
+
+    // ── Pagos ───────────────────────────────────────────────────────────────
 
     suspend fun registrarPago(pago: Pago): Boolean = withContext(Dispatchers.IO) {
         try {
@@ -92,17 +105,40 @@ class FirebaseRepository {
         } catch (e: Exception) { false }
     }
 
-    suspend fun getTodosUsuarios(): List<Usuario> = withContext(Dispatchers.IO) {
-        try {
-            val q = db.collection("usuarios").whereEqualTo("rol", "residente").get().await()
-            q.toObjects(Usuario::class.java)
-        } catch (e: Exception) { emptyList() }
-    }
-
     suspend fun getTotalRecaudado(): Double = withContext(Dispatchers.IO) {
         try {
-            val q = db.collection("pagos").whereEqualTo("estado", "pagado").get().await()
-            q.toObjects(Pago::class.java).sumOf { it.monto }
+            db.collection("pagos").whereEqualTo("estado", "pagado")
+                .get().await().toObjects(Pago::class.java).sumOf { it.monto }
         } catch (e: Exception) { 0.0 }
+    }
+
+    // ── Registros de acceso (NUEVO) ─────────────────────────────────────────
+
+    /**
+     * Guarda un registro de entrada en Firestore.
+     * Colección: "accesos"
+     * Usado tanto por el flujo manual como por el escaneo de QR.
+     */
+    suspend fun registrarAcceso(acceso: RegistroAcceso): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val docRef = db.collection("accesos").document()
+            db.collection("accesos").document(docRef.id)
+                .set(acceso.copy(id = docRef.id)).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    /**
+     * Devuelve todos los registros de acceso de la fecha indicada.
+     * Formato de fecha esperado: "dd/MM/yyyy"
+     */
+    suspend fun getAccesosPorFecha(fecha: String): List<RegistroAcceso> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("accesos")
+                .whereEqualTo("fecha", fecha)
+                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .get().await()
+                .toObjects(RegistroAcceso::class.java)
+        } catch (e: Exception) { emptyList() }
     }
 }

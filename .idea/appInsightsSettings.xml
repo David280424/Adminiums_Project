@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AppInsightsSettings">
-<<<<<<< Updated upstream
     <option name="tabSettings">
       <map>
         <entry key="Firebase Crashlytics">
@@ -23,8 +22,5 @@
         </entry>
       </map>
     </option>
-=======
-    <option name="selectedTabId" value="Firebase Crashlytics" />
->>>>>>> Stashed changes
   </component>
 </project>
