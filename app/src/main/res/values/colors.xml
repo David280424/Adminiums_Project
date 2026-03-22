@@ -16,4 +16,28 @@
     <color name="gray_light">#F7FAFC</color>
     <color name="gray_medium">#E2E8F0</color>
     <color name="dark_header">#2D3748</color>
+    
+    <!-- Otros -->
+    <color name="colorSuccess">#10B981</color>
+    <color name="colorError">#EF4444</color>
+    <color name="gray_divider">#E2E8F0</color>
+
+    <!-- Paleta Premium Dark Modern -->
+    <!-- <color name="colorPrimary">#0F172A</color> -->
+ <!-- Azul Medianoche muy oscuro -->
+    <!-- <color name="colorPrimaryDark">#020617</color> -->
+
+    <!-- <color name="colorAccent">#38BDF8</color> -->
+ <!-- Azul Brillante para acciones -->
+    <!-- <color name="colorBackground">#F8FAFC</color> -->
+ <!-- Fondo gris muy claro (casi blanco) para Residente -->
+    
+    <!-- Para modo oscuro o Admin -->
+    <!-- <color name="colorSurface">#FFFFFF</color> -->
+
+    
+    <!-- Texto -->
+    <!-- <color name="colorTextPrimary">#1E293B</color> -->
+
+    <!-- <color name="colorTextSecondary">#64748B</color> -->
 </resources>

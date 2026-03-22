@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.adminiums1.databinding.ActivityLoginBinding
+import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.AdminActivity
 import com.example.adminiums1.ui.residente.ResidenteActivity
@@ -62,21 +63,40 @@ class LoginActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.Main).launch {
                 val result = repo.login(email, password)
-                binding.progressBar.visibility = View.GONE
-                binding.btnLogin.isEnabled = true
-
+                
                 if (result.isSuccess) {
                     val uid = result.getOrNull() ?: ""
-                    val usuario = repo.getUsuario(uid)
+                    var usuario = repo.getUsuario(uid)
+                    
+                    // --- AUTO-REPARACIÓN DE ADMIN ---
+                    if (usuario == null && rol == "admin") {
+                        val nuevoAdmin = Usuario(
+                            uid = uid,
+                            nombre = "Administrador Principal",
+                            email = email,
+                            rol = "admin",
+                            unidad = "Administración",
+                            balance = 0.0
+                        )
+                        repo.crearUsuario(nuevoAdmin)
+                        usuario = nuevoAdmin
+                    }
+                    // --------------------------------
+
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnLogin.isEnabled = true
+
                     if (usuario == null) {
                         Toast.makeText(this@LoginActivity, "Usuario no encontrado en BD", Toast.LENGTH_SHORT).show()
                         return@launch
                     }
+                    
                     if (usuario.rol != rol) {
                         Toast.makeText(this@LoginActivity, "Rol incorrecto para este acceso", Toast.LENGTH_SHORT).show()
                         repo.logout()
                         return@launch
                     }
+                    
                     val intent = when (rol) {
                         "residente" -> Intent(this@LoginActivity, ResidenteActivity::class.java)
                         "vigilante" -> Intent(this@LoginActivity, VigilanteActivity::class.java)
@@ -86,6 +106,8 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                     finishAffinity()
                 } else {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnLogin.isEnabled = true
                     Toast.makeText(this@LoginActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                 }
             }

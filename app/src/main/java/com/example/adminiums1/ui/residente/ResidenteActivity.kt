@@ -2,7 +2,6 @@ package com.example.adminiums1.ui.residente
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.adminiums1.databinding.ActivityResidenteBinding
 import com.example.adminiums1.repository.FirebaseRepository
