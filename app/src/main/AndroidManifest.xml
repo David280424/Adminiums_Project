@@ -71,7 +71,9 @@
         <activity android:name=".ui.admin.AdminActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
-
+        <activity android:name=".ui.admin.ResidenteDetalleActivity"  android:exported="false"/>
+        <activity android:name=".ui.admin.VigilantesAdminActivity"   android:exported="false"/>
+        <activity android:name=".ui.admin.HistorialEntradasActivity" android:exported="false"/>
         <activity android:name=".MainActivity"
             android:exported="false"/>
 

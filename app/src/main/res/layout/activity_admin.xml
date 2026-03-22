@@ -1,58 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- app/src/main/res/layout/activity_admin.xml — REEMPLAZA el archivo actual -->
-<ScrollView
+<!-- activity_admin.xml — agrega 2 botones al final de la card de residentes -->
+<!-- REEMPLAZA el archivo actual completo -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!-- ── HEADER ─────────────────────────────────────────────────────── -->
-        <LinearLayout
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:padding="20dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚙️ Panel Administrativo"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:id="@+id/tvNombreAdmin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Administrador"
-                    android:textSize="13sp"
-                    android:textColor="@color/colorTextSecondary"/>
-            </LinearLayout>
-
+            android:title="⚙️ Panel Administrativo"
+            android:titleTextColor="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways">
+            <TextView
+                android:id="@+id/tvNombreAdmin"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Admin" android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary"
+                android:layout_gravity="end" android:layout_marginEnd="8dp"/>
             <Button
                 android:id="@+id/btnLogout"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="Salir"
-                android:backgroundTint="@color/colorAccent"
-                android:textColor="@color/white"
-                android:textSize="12sp"/>
-        </LinearLayout>
+                android:layout_width="wrap_content" android:layout_height="32dp"
+                android:layout_gravity="end" android:layout_marginEnd="8dp"
+                android:text="Salir" android:backgroundTint="@color/colorAccent"
+                android:textColor="@color/white" android:textSize="11sp"/>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,265 +45,167 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- ── CARD: ESTADÍSTICAS DE PAGOS ────────────────────────────── -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$ Estado de Cuenta de Cuotas"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
+            <!-- CARD: ESTADÍSTICAS -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp" app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="$ Estado de Cuenta de Cuotas" android:textSize="16sp"
+                        android:textStyle="bold" android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="12dp"/>
-
-                    <!-- Total recaudado -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Total recaudado"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTextSecondary"/>
-                    <TextView
-                        android:id="@+id/tvTotalRecaudado"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$0.00"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="12dp"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/gray_medium"
-                        android:layout_marginBottom="12dp"/>
-
-                    <!-- Pendientes y % pagos -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cuotas pendientes"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorTextSecondary"/>
-                            <TextView
-                                android:id="@+id/tvCuotasPendientes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="22sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorRed"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Total recaudado" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <TextView android:id="@+id/tvTotalRecaudado" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="$0.00" android:textSize="28sp"
+                        android:textStyle="bold" android:textColor="@color/colorPrimary" android:layout_marginBottom="12dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                        android:background="@color/gray_medium" android:layout_marginBottom="12dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Cuotas pendientes" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                            <TextView android:id="@+id/tvCuotasPendientes" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="0" android:textSize="22sp"
+                                android:textStyle="bold" android:textColor="@color/colorRed"/>
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pagos al día"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorTextSecondary"/>
-                            <TextView
-                                android:id="@+id/tvPagosAlDia"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0%"
-                                android:textSize="22sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorGreen"/>
-                            <TextView
-                                android:id="@+id/tvResidentesPagados"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0 de 0 residentes"
-                                android:textSize="11sp"
-                                android:textColor="@color/colorTextSecondary"/>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Pagos al día" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                            <TextView android:id="@+id/tvPagosAlDia" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="0%" android:textSize="22sp"
+                                android:textStyle="bold" android:textColor="@color/colorGreen"/>
+                            <TextView android:id="@+id/tvResidentesPagados" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:text="0 de 0 residentes"
+                                android:textSize="11sp" android:textColor="@color/colorTextSecondary"/>
                         </LinearLayout>
                     </LinearLayout>
-
-                    <!-- Total residentes -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Total residentes"
-                            android:textSize="12sp"
-                            android:textColor="@color/colorTextSecondary"/>
-                        <TextView
-                            android:id="@+id/tvTotalResidentes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorPrimary"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Total residentes"
+                            android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                        <TextView android:id="@+id/tvTotalResidentes" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="16sp"
+                            android:textStyle="bold" android:textColor="@color/colorPrimary"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ── CARD: OCUPACIÓN DE AMENIDADES ──────────────────────────── -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🗺️ Ocupación de Amenidades (hoy)"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="16dp"/>
-
-                    <!-- Piscina -->
+            <!-- CARD: OCUPACIÓN DE AMENIDADES -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp" app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🗺️ Ocupación de Amenidades (hoy)" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/colorPrimary" android:layout_marginBottom="12dp"/>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:layout_marginBottom="4dp">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:text="🏊 Piscina"
-                            android:textStyle="bold" android:textColor="@color/colorPrimary" android:textSize="13sp"/>
+                            android:layout_weight="1" android:text="🏊 Piscina" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="13sp"/>
                         <TextView android:id="@+id/tvPiscinaReservas" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:text="0 / 8 reservadas"
-                            android:textColor="@color/colorTextSecondary" android:textSize="11sp"/>
+                            android:layout_height="wrap_content" android:text="0 / 8" android:textSize="11sp"
+                            android:textColor="@color/colorTextSecondary"/>
                     </LinearLayout>
                     <ProgressBar android:id="@+id/progressPiscina" style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent" android:layout_height="8dp"
-                        android:max="100" android:progress="0"
-                        android:progressTint="@color/colorGreen" android:layout_marginBottom="12dp"/>
-
-                    <!-- Gimnasio -->
+                        android:max="100" android:progress="0" android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="10dp"/>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:layout_marginBottom="4dp">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:text="🏋️ Gimnasio"
-                            android:textStyle="bold" android:textColor="@color/colorPrimary" android:textSize="13sp"/>
+                            android:layout_weight="1" android:text="🏋️ Gimnasio" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="13sp"/>
                         <TextView android:id="@+id/tvGimnasioReservas" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:text="0 / 10 reservadas"
-                            android:textColor="@color/colorTextSecondary" android:textSize="11sp"/>
+                            android:layout_height="wrap_content" android:text="0 / 10" android:textSize="11sp"
+                            android:textColor="@color/colorTextSecondary"/>
                     </LinearLayout>
                     <ProgressBar android:id="@+id/progressGimnasio" style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent" android:layout_height="8dp"
-                        android:max="100" android:progress="0"
-                        android:progressTint="@color/colorGreen" android:layout_marginBottom="12dp"/>
-
-                    <!-- Salón de Fiestas -->
+                        android:max="100" android:progress="0" android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="10dp"/>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:layout_marginBottom="4dp">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:text="🎉 Salón de Fiestas"
-                            android:textStyle="bold" android:textColor="@color/colorPrimary" android:textSize="13sp"/>
+                            android:layout_weight="1" android:text="🎉 Salón" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="13sp"/>
                         <TextView android:id="@+id/tvSalonReservas" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:text="0 / 1 reservadas"
-                            android:textColor="@color/colorTextSecondary" android:textSize="11sp"/>
+                            android:layout_height="wrap_content" android:text="0 / 1" android:textSize="11sp"
+                            android:textColor="@color/colorTextSecondary"/>
                     </LinearLayout>
                     <ProgressBar android:id="@+id/progressSalon" style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent" android:layout_height="8dp"
-                        android:max="100" android:progress="0"
-                        android:progressTint="@color/colorGreen" android:layout_marginBottom="12dp"/>
-
-                    <!-- Área BBQ -->
+                        android:max="100" android:progress="0" android:progressTint="@color/colorGreen"
+                        android:layout_marginBottom="10dp"/>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:layout_marginBottom="4dp">
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:text="🔥 Área BBQ"
-                            android:textStyle="bold" android:textColor="@color/colorPrimary" android:textSize="13sp"/>
+                            android:layout_weight="1" android:text="🔥 BBQ" android:textStyle="bold"
+                            android:textColor="@color/colorPrimary" android:textSize="13sp"/>
                         <TextView android:id="@+id/tvBBQReservas" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:text="0 / 10 reservadas"
-                            android:textColor="@color/colorTextSecondary" android:textSize="11sp"/>
+                            android:layout_height="wrap_content" android:text="0 / 10" android:textSize="11sp"
+                            android:textColor="@color/colorTextSecondary"/>
                     </LinearLayout>
                     <ProgressBar android:id="@+id/progressBBQ" style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent" android:layout_height="8dp"
-                        android:max="100" android:progress="0"
-                        android:progressTint="@color/colorGreen"/>
-
+                        android:max="100" android:progress="0" android:progressTint="@color/colorGreen"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ── CARD: BÚSQUEDA DE RESIDENTES ───────────────────────────── -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+            <!-- CARD: ACCESOS RÁPIDOS (NUEVO) -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="16dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVerVigilantes"
+                    android:layout_width="0dp" android:layout_height="60dp"
+                    android:layout_weight="1" android:layout_marginEnd="8dp"
+                    android:text="🛡️ Vigilantes"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:textColor="@color/white" android:textSize="13sp"
+                    app:cornerRadius="12dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVerHistorial"
+                    android:layout_width="0dp" android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:text="📋 Historial"
+                    app:backgroundTint="@color/colorAccent"
+                    android:textColor="@color/white" android:textSize="13sp"
+                    app:cornerRadius="12dp"/>
+            </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="👥 Residentes"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="12dp"/>
-
-                    <!-- Campo de búsqueda -->
+            <!-- CARD: RESIDENTES CON BUSCADOR -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp" app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="👥 Residentes  •  Toca para ver detalle"
+                        android:textSize="15sp" android:textStyle="bold"
+                        android:textColor="@color/colorPrimary" android:layout_marginBottom="12dp"/>
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:hint="Buscar por nombre o unidad...">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etBuscarResidente"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_width="match_parent" android:layout_height="wrap_content"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- RecyclerView de residentes -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvResidentes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"/>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
