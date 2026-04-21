@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityVigilanteBinding
 import com.example.adminiums1.model.RegistroAcceso
 import com.example.adminiums1.model.Usuario
+import com.example.adminiums1.model.Visitante
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.auth.RolSelectorActivity
 import com.example.adminiums1.ui.vigilante.adapter.AccesosAdapter
@@ -117,7 +118,7 @@ class VigilanteActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val residentes = repo.getTodosUsuarios()
+                val residentes: List<Usuario> = repo.getTodosUsuarios()
                 binding.progressManual.ocultar()
 
                 val encontrado = residentes.find {
@@ -237,7 +238,7 @@ class VigilanteActivity : AppCompatActivity() {
 
                 } else {
                     // QR de visitante → flujo anterior de validación
-                    val visitante = repo.validarVisitante(contenido)
+                    val visitante: Visitante? = repo.validarVisitante(contenido)
                     binding.progressQR.ocultar()
 
                     if (visitante != null) {

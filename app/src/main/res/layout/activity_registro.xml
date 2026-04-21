@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
@@ -9,161 +10,130 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header oscuro igual al login -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="160dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@color/colorBackground"
             android:padding="24dp">
-
             <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@mipmap/ic_launcher"
                 android:contentDescription="Logo"/>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Adminiums"
-                android:textSize="28sp"
+                android:text="Registro Adminiums"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:layout_marginTop="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Crear cuenta nueva"
-                android:textSize="13sp"
-                android:textColor="@color/colorTextSecondary"/>
         </LinearLayout>
 
-        <!-- Formulario blanco -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/white"
-            android:padding="24dp">
+            android:background="@drawable/bg_form_rounded"
+            android:padding="24dp"
+            android:layout_marginTop="-20dp">
 
             <Button
                 android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="‹ Cambiar rol"
-                android:backgroundTint="@android:color/transparent"
+                android:text="‹ Volver al inicio"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="8dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nombre completo"
+                android:text="Selecciona tu Condominio"
                 android:textSize="13sp"
+                android:textStyle="bold"
                 android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="6dp"/>
+                android:layout_marginBottom="8dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerEdificios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Buscar edificio..."
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre completo"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNombre"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Ej: Juan Pérez"/>
+                    android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Solo Residente necesita unidad -->
-            <TextView
-                android:id="@+id/labelUnidad"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Número de unidad / Depto"
-                android:textSize="13sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="6dp"/>
-
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputUnidad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:hint="Número de Unidad / Depto"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUnidad"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Ej: Depto 301"/>
+                    android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Correo Electrónico"
-                android:textSize="13sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:hint="Correo Electrónico"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="usuario@ejemplo.com"
                     android:inputType="textEmailAddress"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contraseña"
-                android:textSize="13sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Contraseña"
                 app:passwordToggleEnabled="true"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Mínimo 6 caracteres"
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Confirmar contraseña"
-                android:textSize="13sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Confirmar Contraseña"
                 app:passwordToggleEnabled="true"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_marginBottom="16dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etConfirmPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Repite tu contraseña"
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -172,28 +142,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginBottom="8dp"/>
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/btnRegistrar"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="REGISTRARSE"
+                android:layout_height="56dp"
+                android:text="CREAR CUENTA"
                 android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="15sp"/>
+                app:cornerRadius="12dp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tvIrLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="¿Ya tienes cuenta? Inicia sesión aquí"
+                android:text="¿Ya tienes cuenta? Inicia sesión"
                 android:textColor="@color/colorPrimary"
-                android:layout_marginTop="16dp"
-                android:padding="8dp"/>
+                android:padding="12dp"
+                android:layout_marginTop="8dp"/>
 
         </LinearLayout>
     </LinearLayout>

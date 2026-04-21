@@ -4,19 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:background="#F4F7F9">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:title="Detalle de Residente"
-            android:titleTextColor="@color/white"
-            app:layout_scrollFlags="scroll|enterAlways"/>
+            app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:title="Estado de Cuenta"
+            app:titleTextColor="@color/white"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -28,27 +29,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Header del residente -->
+            <!-- Card de Perfil Premium -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                android:layout_marginBottom="20dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="center">
+                    android:padding="24dp">
 
                     <TextView
                         android:id="@+id/tvDetalleNombre"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nombre"
+                        android:text="Nombre del Residente"
                         android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/colorPrimary"/>
@@ -57,171 +58,93 @@
                         android:id="@+id/tvDetalleUnidad"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Unidad"
-                        android:textSize="14sp"
-                        android:textColor="@color/colorTextSecondary"/>
-
-                    <TextView
-                        android:id="@+id/tvDetalleEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Email"
-                        android:textSize="13sp"
+                        android:text="Unidad: 000"
                         android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_marginTop="4dp"/>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnEliminarResidente"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:text="🗑️ Eliminar residente"
-                        app:backgroundTint="@color/colorRed"
-                        android:textColor="@color/white"
-                        android:textSize="13sp"
-                        app:cornerRadius="8dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#EDF2F7"
+                        android:layout_marginVertical="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Saldo Actual" android:textSize="11sp" android:textColor="@color/colorTextSecondary"/>
+                            <TextView android:id="@+id/tvDetalleBalance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textStyle="bold" android:textColor="@color/colorRed" android:textSize="18sp"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnNotificarCobro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cobrar"
+                            app:icon="@android:drawable/stat_sys_phone_call"
+                            app:backgroundTint="@color/colorGreen"
+                            android:textSize="12sp"
+                            app:cornerRadius="12dp"/>
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Sección: Pagos -->
+            <!-- Historial de Pagos (Formato de Reporte) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HISTORIAL DE MOVIMIENTOS"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="0.1"/>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvHeaderPagos"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pagos"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <ProgressBar
-                        android:id="@+id/progressPagos"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:id="@+id/tvSinPagos"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sin pagos registrados"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:visibility="gone"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvPagos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Sección: Reservaciones -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/tvHeaderReservaciones"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Reservaciones"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <ProgressBar
-                        android:id="@+id/progressReservaciones"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:id="@+id/tvSinReservaciones"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sin reservaciones"
-                        android:textSize="13sp"
+                        android:id="@+id/tvSinPagos"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:gravity="center"
+                        android:text="No hay registros de pago"
                         android:textColor="@color/colorTextSecondary"
                         android:visibility="gone"/>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvReservaciones"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Sección: Invitados -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEliminarResidente"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvHeaderInvitados"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Invitados registrados"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="8dp"/>
-
-                    <ProgressBar
-                        android:id="@+id/progressInvitados"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:id="@+id/tvSinInvitados"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sin invitados registrados"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:visibility="gone"/>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvInvitados"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                android:layout_height="56dp"
+                android:layout_marginTop="32dp"
+                android:text="Eliminar de este Edificio"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:textColor="@color/colorRed"
+                app:icon="@android:drawable/ic_delete"
+                app:iconTint="@color/colorRed"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

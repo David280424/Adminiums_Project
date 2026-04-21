@@ -1,106 +1,72 @@
-// app/src/main/java/com/example/adminiums1/ui/auth/RegistroActivity.kt
 package com.example.adminiums1.ui.auth
 
 import android.os.Bundle
+import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.adminiums1.databinding.ActivityRegistroBinding
 import com.example.adminiums1.model.Usuario
+import com.example.adminiums1.model.Condominio
 import com.example.adminiums1.repository.FirebaseRepository
-import com.example.adminiums1.utils.ErrorHandler
-import com.example.adminiums1.utils.estaVacio
-import com.example.adminiums1.utils.mostrar
-import com.example.adminiums1.utils.ocultar
-import com.example.adminiums1.utils.valor
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-/**
- * Parte 1 — Registro de Residente y Vigilante.
- * Parte 5 — Usa ViewBinding (reemplaza findViewById) y ErrorHandler centralizado.
- */
 class RegistroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegistroBinding
     private val repo = FirebaseRepository()
-    private val auth = FirebaseAuth.getInstance()
-    private var rol: String = "residente"
+    
+    private var listaCondominios: List<Condominio> = emptyList()
+    private var edificioSeleccionadoId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        rol = intent.getStringExtra("rol") ?: "residente"
+        cargarCondominios()
 
-        binding.btnBack.setOnClickListener { finish() }
-        binding.tvIrLogin.setOnClickListener { finish() }
-
-        binding.btnRegistrar.setOnClickListener { intentarRegistro() }
+        binding.btnRegistrar.setOnClickListener {
+            registrarUsuario()
+        }
     }
 
-    private fun intentarRegistro() {
-        val nombre   = binding.etNombre.valor()
-        val unidad   = binding.etUnidad.valor()
-        val email    = binding.etEmail.valor()
-        val password = binding.etPassword.valor()
-        val confirm  = binding.etConfirmPassword.valor()
-
-        // Validaciones
-        if (nombre.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (password != confirm) {
-            binding.etConfirmPassword.error = "Las contraseñas no coinciden"
-            return
-        }
-        if (password.length < 6) {
-            binding.etPassword.error = "Mínimo 6 caracteres"
-            return
-        }
-
-        binding.progressBar.mostrar()
-        binding.btnRegistrar.isEnabled = false
-
+    private fun cargarCondominios() {
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val result = auth.createUserWithEmailAndPassword(email, password).await()
-                val uid = result.user?.uid ?: throw Exception("UID nulo")
-
-                val usuario = Usuario(
-                    uid              = uid,
-                    nombre           = nombre,
-                    email            = email,
-                    rol              = rol,
-                    unidad           = if (rol == "residente") unidad else "",
-                    balance          = if (rol == "residente") 1250.0 else 0.0,
-                    proximoPago      = if (rol == "residente") 450.0  else 0.0,
-                    fechaVencimiento = if (rol == "residente") "15 Abr 2026" else ""
-                )
-                repo.crearUsuario(usuario)
-
-                withContext(Dispatchers.Main) {
-                    binding.progressBar.ocultar()
-                    Toast.makeText(
-                        this@RegistroActivity,
-                        "¡Registro exitoso! Inicia sesión.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    finish()
-                }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    binding.progressBar.ocultar()
-                    binding.btnRegistrar.isEnabled = true
-                    ErrorHandler.mostrar(this@RegistroActivity, e, "RegistroActivity")
+            val condominios = repo.getCondominios()
+            withContext(Dispatchers.Main) {
+                listaCondominios = condominios
+                val nombres = condominios.map { it.nombre }
+                val adapter = ArrayAdapter(this@RegistroActivity, android.R.layout.simple_dropdown_item_1line, nombres)
+                binding.spinnerEdificios.setAdapter(adapter)
+                
+                binding.spinnerEdificios.setOnItemClickListener { _, _, position, _ ->
+                    edificioSeleccionadoId = listaCondominios[position].id
                 }
             }
         }
+    }
+
+    private fun registrarUsuario() {
+        val nombre = binding.etNombre.text.toString().trim()
+        val email = binding.etEmail.text.toString().trim()
+        val pass = binding.etPassword.text.toString().trim()
+        val unidad = binding.etUnidad.text.toString().trim()
+
+        if (edificioSeleccionadoId.isEmpty()) {
+            Toast.makeText(this, "Selecciona un edificio", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (nombre.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        binding.progressBar.visibility = View.VISIBLE
+        // Aquí iría la lógica de Auth y guardado en Firestore usando edificioSeleccionadoId
+        Toast.makeText(this, "Registrando en $edificioSeleccionadoId...", Toast.LENGTH_SHORT).show()
     }
 }

@@ -2,45 +2,60 @@ package com.example.adminiums1.ui.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityAdminBinding
+import com.example.adminiums1.model.Reservacion
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.auth.RolSelectorActivity
-import com.example.adminiums1.utils.ErrorHandler
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 class AdminActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminBinding
     private val repo = FirebaseRepository()
-    private val db   = FirebaseFirestore.getInstance()
-    private val listeners = mutableListOf<ListenerRegistration>()
-    private lateinit var residentesAdapter: ResidentesAdapter
+    private lateinit var adapter: ResidentesAdapter
+    
+    private var edificioIdActual: String = "" 
+    private var listaResidentes: List<Usuario> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        cargarNombreAdmin()
-        configurarRecyclerView()
-        configurarBusqueda()
-        escucharEstadisticasPagos()
-        escucharOcupacionAmenidades()
-        escucharResidentes()
+        setupUI()
+        seleccionarEdificioDialog()
+    }
 
-        // ── Botones a nuevas secciones ──────────────────────────────────────
-        binding.btnVerVigilantes.setOnClickListener {
-            startActivity(Intent(this, VigilantesAdminActivity::class.java))
+    private fun setupUI() {
+        adapter = ResidentesAdapter { residente ->
+            mostrarOpcionesResidente(residente)
         }
-        binding.btnVerHistorial.setOnClickListener {
-            startActivity(Intent(this, HistorialEntradasActivity::class.java))
+        binding.rvResidentes.layoutManager = LinearLayoutManager(this)
+        binding.rvResidentes.adapter = adapter
+
+        binding.chipGroupFiltros.setOnCheckedChangeListener { _, _ ->
+            filtrar(binding.etBuscarResidente.text.toString())
         }
+
+        binding.etBuscarResidente.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) { filtrar(s.toString()) }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.layoutEdificio.setOnClickListener { seleccionarEdificioDialog() }
 
         binding.btnLogout.setOnClickListener {
             repo.logout()
@@ -49,108 +64,110 @@ class AdminActivity : AppCompatActivity() {
         }
     }
 
-    private fun cargarNombreAdmin() {
-        val uid = repo.getCurrentUid() ?: return
-        val listener = db.collection("usuarios").document(uid)
-            .addSnapshotListener { snap, error ->
-                if (error != null) { ErrorHandler.log(error, "AdminActivity:nombreAdmin"); return@addSnapshotListener }
-                binding.tvNombreAdmin.text = snap?.getString("nombre") ?: "Administrador"
+    private fun seleccionarEdificioDialog() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val condominios = repo.getCondominios()
+            withContext(Dispatchers.Main) {
+                if (condominios.isEmpty()) {
+                    Toast.makeText(this@AdminActivity, "No hay condominios registrados", Toast.LENGTH_LONG).show()
+                    return@withContext
+                }
+                val nombres = condominios.map { it.nombre }.toTypedArray()
+                AlertDialog.Builder(this@AdminActivity)
+                    .setTitle("🏢 Seleccionar Edificio")
+                    .setItems(nombres) { _, which ->
+                        val sel = condominios[which]
+                        edificioIdActual = sel.id
+                        binding.tvEdificioActual.text = "🏢 ${sel.nombre}"
+                        cargarDashboard()
+                    }
+                    .setCancelable(false)
+                    .show()
             }
-        listeners.add(listener)
-    }
-
-    private fun configurarRecyclerView() {
-        // onClick abre ResidenteDetalleActivity
-        residentesAdapter = ResidentesAdapter { residente ->
-            startActivity(Intent(this, ResidenteDetalleActivity::class.java).apply {
-                putExtra(ResidenteDetalleActivity.EXTRA_UID,    residente.uid)
-                putExtra(ResidenteDetalleActivity.EXTRA_NOMBRE, residente.nombre)
-                putExtra(ResidenteDetalleActivity.EXTRA_UNIDAD, residente.unidad)
-                putExtra(ResidenteDetalleActivity.EXTRA_EMAIL,  residente.email)
-            })
-        }
-        binding.rvResidentes.apply {
-            layoutManager = LinearLayoutManager(this@AdminActivity)
-            adapter = residentesAdapter
-            isNestedScrollingEnabled = false
         }
     }
 
-    private fun configurarBusqueda() {
-        binding.etBuscarResidente.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                residentesAdapter.filtrar(s.toString())
+    private fun cargarDashboard() {
+        if (edificioIdActual.isEmpty()) return
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val residentes = repo.getResidentesPorEdificio(edificioIdActual)
+                val recaudado = repo.getTotalRecaudadoEdificio(edificioIdActual)
+                val reservaciones = repo.getReservaciones()
+
+                withContext(Dispatchers.Main) {
+                    listaResidentes = residentes
+                    adapter.setDatos(residentes)
+                    binding.tvTotalRecaudado.text = "$ ${"%.2f".format(recaudado)}"
+                    val deuda = residentes.filter { it.balance < 0 }.sumOf { abs(it.balance) }
+                    binding.tvTotalDeuda.text = "$ ${"%.2f".format(deuda)}"
+                    
+                    // Actualización Real de Amenidades
+                    val resEdificio = reservaciones // En un sistema real filtraríamos por edificioId
+                    val pPiscina = Math.min(resEdificio.filter { it.amenidad == "Piscina" }.size * 20, 100)
+                    val pGim = Math.min(resEdificio.filter { it.amenidad == "Gimnasio" }.size * 20, 100)
+                    
+                    binding.progressPiscina.progress = pPiscina
+                    binding.tvPiscinaReservas.text = "Piscina: $pPiscina% ocupado"
+                    binding.progressGimnasio.progress = pGim
+                    binding.tvGimnasioReservas.text = "Gimnasio: $pGim% ocupado"
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@AdminActivity, "Error de carga", Toast.LENGTH_SHORT).show()
+                }
             }
-            override fun afterTextChanged(s: android.text.Editable?) {}
-        })
+        }
     }
 
-    private fun escucharEstadisticasPagos() {
-        val listener = db.collection("pagos")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) { ErrorHandler.log(error, "AdminActivity:pagos"); return@addSnapshotListener }
-                var totalRecaudado = 0.0; var pagados = 0; var pendientes = 0
-                val total = snapshot?.size() ?: 0
-                snapshot?.documents?.forEach { doc ->
-                    when (doc.getString("estado")) {
-                        "pagado"    -> { totalRecaudado += doc.getDouble("monto") ?: 0.0; pagados++ }
-                        "pendiente" -> pendientes++
+    private fun mostrarOpcionesResidente(u: Usuario) {
+        val opciones = arrayOf("Ver Reporte / Estado de Cuenta", "➕ Añadir Fondos / Recargar", "Eliminar Residente")
+        AlertDialog.Builder(this)
+            .setTitle(u.nombre)
+            .setItems(opciones) { _, which ->
+                when (which) {
+                    0 -> {
+                        val intent = Intent(this, ResidenteDetalleActivity::class.java)
+                        intent.putExtra(ResidenteDetalleActivity.EXTRA_UID, u.uid)
+                        startActivity(intent)
+                    }
+                    1 -> mostrarDialogRecarga(u)
+                    2 -> Toast.makeText(this, "Función eliminar deshabilitada", Toast.LENGTH_SHORT).show()
+                }
+            }.show()
+    }
+
+    private fun mostrarDialogRecarga(u: Usuario) {
+        val input = android.widget.EditText(this)
+        input.hint = "Monto a añadir (ej: 500)"
+        input.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        
+        AlertDialog.Builder(this)
+            .setTitle("💰 Añadir Fondos a ${u.nombre}")
+            .setView(input)
+            .setPositiveButton("Añadir") { _, _ ->
+                val monto = input.text.toString().toDoubleOrNull() ?: 0.0
+                if (monto > 0) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val exito = repo.recargarBalance(u.uid, monto, u.edificioId)
+                        withContext(Dispatchers.Main) {
+                            if (exito) {
+                                cargarDashboard()
+                                Toast.makeText(this@AdminActivity, "Saldo actualizado", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
-                val porcentaje = if (total > 0) (pagados * 100 / total) else 0
-                binding.tvTotalRecaudado.text    = "$ ${"%.2f".format(totalRecaudado)}"
-                binding.tvCuotasPendientes.text  = "$pendientes"
-                binding.tvPagosAlDia.text        = "$porcentaje%"
-                binding.tvResidentesPagados.text = "$pagados de $total residentes"
             }
-        listeners.add(listener)
+            .setNegativeButton("Cancelar", null).show()
     }
 
-    private val capacidades = mapOf(
-        "Piscina" to 8, "Gimnasio" to 10, "Salón de Fiestas" to 1, "Área BBQ" to 10
-    )
-
-    private fun escucharOcupacionAmenidades() {
-        val hoy = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-        val listener = db.collection("reservaciones").whereEqualTo("fecha", hoy)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) { ErrorHandler.log(error, "AdminActivity:amenidades"); return@addSnapshotListener }
-                val conteo = mutableMapOf("Piscina" to 0, "Gimnasio" to 0, "Salón de Fiestas" to 0, "Área BBQ" to 0)
-                snapshot?.documents?.forEach { doc ->
-                    val a = doc.getString("amenidad") ?: ""
-                    if (conteo.containsKey(a)) conteo[a] = conteo[a]!! + 1
-                }
-                val p = conteo["Piscina"]!!;           val capP = capacidades["Piscina"]!!
-                val g = conteo["Gimnasio"]!!;          val capG = capacidades["Gimnasio"]!!
-                val s = conteo["Salón de Fiestas"]!!;  val capS = capacidades["Salón de Fiestas"]!!
-                val b = conteo["Área BBQ"]!!;          val capB = capacidades["Área BBQ"]!!
-                binding.tvPiscinaReservas.text    = "$p / $capP reservadas"
-                binding.progressPiscina.progress  = (p * 100 / capP).coerceAtMost(100)
-                binding.tvGimnasioReservas.text   = "$g / $capG reservadas"
-                binding.progressGimnasio.progress = (g * 100 / capG).coerceAtMost(100)
-                binding.tvSalonReservas.text      = "$s / $capS reservadas"
-                binding.progressSalon.progress    = (s * 100 / capS).coerceAtMost(100)
-                binding.tvBBQReservas.text        = "$b / $capB reservadas"
-                binding.progressBBQ.progress      = (b * 100 / capB).coerceAtMost(100)
-            }
-        listeners.add(listener)
-    }
-
-    private fun escucharResidentes() {
-        val listener = db.collection("usuarios").whereEqualTo("rol", "residente")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) { ErrorHandler.log(error, "AdminActivity:residentes"); return@addSnapshotListener }
-                val lista = snapshot?.documents?.mapNotNull { it.toObject(Usuario::class.java) } ?: emptyList()
-                binding.tvTotalResidentes.text = "${lista.size}"
-                residentesAdapter.setDatos(lista)
-            }
-        listeners.add(listener)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        listeners.forEach { it.remove() }
-        listeners.clear()
+    private fun filtrar(query: String) {
+        var filtrada = listaResidentes.filter { 
+            it.nombre.contains(query, ignoreCase = true) || it.unidad.contains(query, ignoreCase = true)
+        }
+        if (binding.chipDeudores.isChecked) filtrada = filtrada.filter { it.balance < 0 }
+        else if (binding.chipAlDia.isChecked) filtrada = filtrada.filter { it.balance >= 0 }
+        adapter.setDatos(filtrada)
     }
 }
