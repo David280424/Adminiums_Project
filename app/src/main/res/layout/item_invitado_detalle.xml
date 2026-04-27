@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_invitado_detalle.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal" android:padding="10dp"
     android:gravity="center_vertical"
-    android:background="@color/gray_light"
+    android:background="@color/colorSurfaceSecondary"
     android:layout_marginBottom="6dp">
 
     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
         android:layout_weight="1" android:orientation="vertical">
         <TextView android:id="@+id/tvInvitadoNombre"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textSize="14sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
+            android:textSize="14sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary"/>
         <TextView android:id="@+id/tvInvitadoVigencia"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>

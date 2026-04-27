@@ -1,100 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/colorBackground">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:title="Pagar Cuota"
-            android:titleTextColor="@color/white"
-            app:layout_scrollFlags="scroll|enterAlways"/>
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="match_parent">
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
+        <!-- PASO 1: RESUMEN -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <!-- Info del residente -->
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                android:background="@drawable/bg_header_residente"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <ImageButton
+                    android:id="@+id/btnBackPaso1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_revert"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
+                    android:layout_marginBottom="8dp"
+                    android:contentDescription="Regresar"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mi Cuota"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvNombreResidente"
-                        android:layout_width="wrap_content"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nombre"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"/>
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        android:layout_marginBottom="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView android:id="@+id/tvResumenNombre" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16sp" android:textColor="@color/colorTextPrimary"/>
+                            <TextView android:id="@+id/tvResumenUnidad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/colorTextSecondary" android:textSize="14sp"/>
+                            <TextView android:id="@+id/tvResumenEdificio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/colorTextSecondary" android:textSize="14sp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/tvUnidadResidente"
-                        android:layout_width="wrap_content"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Unidad"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_marginBottom="16dp"/>
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        android:layout_marginBottom="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp"
+                            android:gravity="center">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Monto a pagar" android:textSize="12sp"/>
+                            <TextView android:id="@+id/tvMontoGrande" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textSize="36sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Monto a pagar"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"/>
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipVencimiento"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Vence: --"
+                                app:chipBackgroundColor="@color/colorErrorBg"
+                                android:textColor="@color/colorError"/>
 
-                    <TextView
-                        android:id="@+id/tvMontoCuota"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$0.00"
-                        android:textSize="40sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"/>
+                            <TextView android:id="@+id/tvBalanceActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:layout_marginTop="4dp"/>
 
-                    <TextView
-                        android:id="@+id/tvFechaVence"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Vence: --"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorRed"/>
+                            <TextView android:id="@+id/tvConceptoDetalle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cuota mensual" android:layout_marginTop="8dp" android:textSize="13sp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/tvBalanceActual"
-                        android:layout_width="wrap_content"
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Últimos movimientos" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvUltimosPagos"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Balance: $0.00"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"/>
+                        android:nestedScrollingEnabled="false"/>
+
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </androidx.core.widget.NestedScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProcederPago"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_margin="16dp"
+                android:text="PROCEDER AL PAGO"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- PASO 2: FORMULARIO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Cómo deseas pagar?"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgMetodoPago"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton android:id="@+id/rbEfectivo" android:layout_width="match_parent" android:layout_height="56dp" android:text="Efectivo 💵" android:textSize="16sp"/>
+                <RadioButton android:id="@+id/rbTransferencia" android:layout_width="match_parent" android:layout_height="56dp" android:text="Transferencia 🏦" android:textSize="16sp"/>
+                <RadioButton android:id="@+id/rbTarjeta" android:layout_width="match_parent" android:layout_height="56dp" android:text="Tarjeta 💳" android:textSize="16sp"/>
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layoutTransferenciaInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:padding="12dp"
+                android:background="@drawable/bg_card_border"
+                android:layout_marginTop="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Datos para transferencia:" android:textStyle="bold" android:textSize="12sp"/>
+                <TextView android:id="@+id/tvClabeCondominio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CLABE: --" android:textSize="14sp" android:layout_marginTop="4dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Número de referencia"
+                    style="@style/Widget.Adminiums.TextInputLayout"
+                    android:layout_marginTop="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etReferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Notas opcionales"
+                style="@style/Widget.Adminiums.TextInputLayout"
+                android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNotasPago"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -102,118 +187,122 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:visibility="gone"
+                android:layout_marginTop="16dp"/>
+
+            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAtrasPaso1"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="ATRÁS"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_marginEnd="8dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnConfirmarPago"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="2"
+                    android:text="CONFIRMAR PAGO"
+                    app:cornerRadius="12dp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- PASO 3: RECIBO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/ivCheckAnim"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@android:drawable/checkbox_on_background"
+                app:tint="@color/colorSuccess"
+                android:layout_marginTop="32dp"
+                android:contentDescription="Éxito"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¡Pago Exitoso!"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorSuccess"
+                android:layout_marginTop="16dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardReciboFinal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView android:id="@+id/tvReciboFolio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <TextView android:id="@+id/tvReciboFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/colorBorderTertiary" android:layout_marginVertical="12dp"/>
+
+                    <TextView android:id="@+id/tvReciboDatoResidente" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="14sp"/>
+                    <TextView android:id="@+id/tvReciboDatoEdificio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/colorBorderTertiary" android:layout_marginVertical="12dp"/>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Monto:"/>
+                        <TextView android:id="@+id/tvReciboMonto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Método:"/>
+                        <TextView android:id="@+id/tvReciboMetodo" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Concepto:"/>
+                        <TextView android:id="@+id/tvReciboConcepto" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShareImg"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Compartir como imagen"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_marginBottom="8dp"/>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPagar"
+                android:id="@+id/btnDownloadPdf"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Descargar PDF"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVolverInicio"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="✅ Registrar Pago"
-                app:backgroundTint="@color/colorGreen"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="24dp"
-                app:cornerRadius="12dp"/>
-
-            <!-- Recibo (visible tras pagar) -->
-            <LinearLayout
-                android:id="@+id/layoutRecibo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardRecibo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="6dp"
-                    app:cardBackgroundColor="@color/white">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="24dp"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="ADMINIUMS"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorPrimary"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Comprobante de Pago"
-                            android:textSize="13sp"
-                            android:textColor="@color/colorTextSecondary"
-                            android:layout_marginBottom="16dp"/>
-
-                        <TextView
-                            android:id="@+id/tvReciboEstado"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="✅ PAGO CONFIRMADO"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorGreen"
-                            android:layout_marginBottom="16dp"/>
-
-                        <View android:layout_width="match_parent" android:layout_height="1dp"
-                            android:background="@color/gray_medium" android:layout_marginBottom="16dp"/>
-
-                        <TextView android:id="@+id/tvReciboNombre"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:textSize="16sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
-                        <TextView android:id="@+id/tvReciboUnidad"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:textSize="13sp" android:textColor="@color/colorTextSecondary"
-                            android:layout_marginBottom="12dp"/>
-
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Monto pagado" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
-                        <TextView android:id="@+id/tvReciboMonto"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:textSize="34sp" android:textStyle="bold" android:textColor="@color/colorPrimary"
-                            android:layout_marginBottom="12dp"/>
-
-                        <TextView android:id="@+id/tvReciboFecha"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
-                        <TextView android:id="@+id/tvReciboFolio"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Botones de compartir -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCompartirImagen"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="📤 Compartir por WhatsApp / Imagen"
-                    app:backgroundTint="@color/colorGreen"
-                    android:textColor="@color/white"
-                    app:cornerRadius="12dp"
-                    android:layout_marginBottom="8dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDescargarPDF"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="📄 Descargar / Compartir PDF"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:textColor="@color/white"
-                    app:cornerRadius="12dp"
-                    android:layout_marginBottom="24dp"/>
-
-            </LinearLayout>
+                android:text="VOLVER AL INICIO"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp"/>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </ViewFlipper>
+
+</LinearLayout>

@@ -6,10 +6,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ActivityResidenteBinding
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.repository.FirebaseRepository
-import com.example.adminiums1.ui.auth.RolSelectorActivity
+import com.example.adminiums1.ui.auth.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -26,6 +28,8 @@ class ResidenteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityResidenteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        window.statusBarColor = ContextCompat.getColor(this, R.color.colorResidenteDark)
 
         setupUI()
         cargarDatos()
@@ -42,42 +46,35 @@ class ResidenteActivity : AppCompatActivity() {
             startActivity(Intent(this, PagarCuotaActivity::class.java))
         }
         
-        // --- FUNCIONALIDAD AÑADIR FONDOS (USUARIO) ---
-        binding.btnRecargarFondos.setOnClickListener {
-            mostrarDialogRecarga()
+        binding.qaCardPagar.setOnClickListener {
+            startActivity(Intent(this, PagarCuotaActivity::class.java))
+        }
+
+        binding.btnMiQR.setOnClickListener {
+            startActivity(Intent(this, MiQRActivity::class.java))
+        }
+        
+        binding.btnReportarIncidencia.setOnClickListener {
+            startActivity(Intent(this, ReportarIncidenciaActivity::class.java))
+        }
+        
+        binding.btnSolicitarLimpieza.setOnClickListener {
+            solicitarLimpieza()
         }
 
         binding.btnLogout.setOnClickListener {
             repo.logout()
-            startActivity(Intent(this, RolSelectorActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             finishAffinity()
         }
     }
 
-    private fun mostrarDialogRecarga() {
-        val usuario = usuarioActual ?: return
-        val input = android.widget.EditText(this)
-        input.hint = "Monto a recargar (ej: 500)"
-        input.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-        
+    private fun solicitarLimpieza() {
         AlertDialog.Builder(this)
-            .setTitle("💰 Recargar Saldo")
-            .setMessage("Ingresa el monto que deseas añadir a tu cuenta de Adminiums")
-            .setView(input)
-            .setPositiveButton("Recargar") { _, _ ->
-                val monto = input.text.toString().toDoubleOrNull() ?: 0.0
-                if (monto > 0) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val exito = repo.recargarBalance(usuario.uid, monto, usuario.edificioId)
-                        withContext(Dispatchers.Main) {
-                            if (exito) {
-                                delay(500)
-                                cargarDatos()
-                                Toast.makeText(this@ResidenteActivity, "¡Saldo actualizado con éxito!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                }
+            .setTitle("Requerir Limpieza")
+            .setMessage("¿Deseas solicitar limpieza para tu unidad o un área común?")
+            .setPositiveButton("Confirmar") { _, _ ->
+                Toast.makeText(this, "Solicitud enviada", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -95,8 +92,21 @@ class ResidenteActivity : AppCompatActivity() {
             usuarioActual = usuario
             usuario?.let {
                 binding.tvBienvenido.text = "Hola, ${it.nombre}"
-                binding.tvUnidad.text = "Unidad ${it.unidad} • ${it.edificioId ?: "General"}"
+                binding.tvUnidad.text = "Unidad ${it.unidad}"
                 binding.tvBalance.text = "$ ${"%.2f".format(it.balance)}"
+                
+                binding.tvBalanceAcumulado.text = "$ ${"%.2f".format(it.balance)}"
+                binding.tvCuotaMensual.text = "$ ${"%.2f".format(it.proximoPago)}"
+                binding.tvProximoPago.text = "$ ${"%.2f".format(it.proximoPago)} pendiente"
+                
+                if (it.balance < 0) {
+                    binding.tvFechaVencimiento.visibility = View.VISIBLE
+                    binding.tvFechaVencimiento.text = "Vence: ${it.fechaVencimiento.ifEmpty { "Fin de mes" }}"
+                    binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorRed))
+                } else {
+                    binding.tvFechaVencimiento.visibility = View.GONE
+                    binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorGreen))
+                }
             }
         }
     }

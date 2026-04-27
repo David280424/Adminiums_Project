@@ -1,43 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2D3748</color>
-    <color name="colorPrimaryDark">#1A202C</color>
-    <color name="colorAccent">#4A5568</color>
-    <color name="colorBackground">#1A202C</color>
-    <color name="colorSurface">#2D3748</color>
-    <color name="colorCard">#FFFFFF</color>
-    <color name="colorTextPrimary">#FFFFFF</color>
-    <color name="colorTextSecondary">#A0AEC0</color>
-    <color name="colorButtonPrimary">#2D3748</color>
-    <color name="colorGreen">#48BB78</color>
-    <color name="colorRed">#F56565</color>
+    <!-- ── Paleta Principal Modernizada ── -->
+    <color name="colorPrimary">#7C4DFF</color>
+    <color name="colorPrimaryDark">#6200EA</color>
+    <color name="colorPrimaryLight">#B47CFF</color>
+
+    <color name="colorSecondary">#00BFA5</color>
+    <color name="colorSecondaryDark">#008E76</color>
+    <color name="colorSecondaryLight">#5DF2D6</color>
+
+    <!-- ── Roles ── -->
+    <color name="colorResidente">#2D3748</color>
+    <color name="colorResidenteDark">#1A202C</color>
+    <color name="colorResidenteLight">#4A5568</color>
+
+    <color name="colorVigilante">#1C3A2E</color>
+    <color name="colorVigilanteDark">#132A20</color>
+    <color name="colorVigilanteLight">#2D5A40</color>
+
+    <color name="colorReportes">#322659</color>
+    <color name="colorReportesLight">#4A3780</color>
+
+    <!-- ── Superficie / Fondos ── -->
+    <color name="colorBackground">#F8F9FE</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorSurfaceSecondary">#F3F5F7</color>
+
+    <!-- ── Texto ── -->
+    <color name="colorTextPrimary">#1A202C</color>
+    <color name="colorTextSecondary">#718096</color>
+    <color name="colorTextTertiary">#A0AEC0</color>
+
+    <!-- ── Bordes ── -->
+    <color name="colorBorderPrimary">#CBD5E0</color>
+    <color name="colorBorderSecondary">#E2E8F0</color>
+    <color name="colorBorderTertiary">#EDF2F7</color>
+
+    <!-- ── Colores de Estado ── -->
+    <color name="colorEstadoResuelto">#4CAF50</color>
+    <color name="colorEstadoEnProceso">#FF9800</color>
+    <color name="colorEstadoPendiente">#F44336</color>
+    <color name="colorEstadoInfo">#2196F3</color>
+
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorSuccessBg">#EAF3DE</color>
+    <color name="colorSuccessBorder">#C0DD97</color>
+
+    <color name="colorError">#F44336</color>
+    <color name="colorErrorBg">#FCEBEB</color>
+    <color name="colorErrorBorder">#F09595</color>
+
+    <color name="colorWarning">#FF9800</color>
+    <color name="colorWarningBg">#FEFCBF</color>
+    <color name="colorOnline">#4CAF50</color>
+
+    <!-- ── Burbujas de Chat ── -->
+    <color name="bubbleOwn">#E8D5FF</color>
+    <color name="bubbleOther">#FFFFFF</color>
+
+    <!-- ── Avatar Chips ── -->
+    <color name="colorAvatarBlueBg">#E6F1FB</color>
+    <color name="colorAvatarBlueText">#185FA5</color>
+    <color name="colorAvatarGreenBg">#EAF3DE</color>
+    <color name="colorAvatarGreenText">#3B6D11</color>
+    <color name="colorAvatarRedBg">#FCEBEB</color>
+    <color name="colorAvatarRedText">#A32D2D</color>
+
+    <!-- ── Utilidades ── -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="gray_light">#F7FAFC</color>
-    <color name="gray_medium">#E2E8F0</color>
-    <color name="dark_header">#2D3748</color>
-    
-    <!-- Otros -->
-    <color name="colorSuccess">#10B981</color>
-    <color name="colorError">#EF4444</color>
-    <color name="gray_divider">#E2E8F0</color>
-
-    <!-- Paleta Premium Dark Modern -->
-    <!-- <color name="colorPrimary">#0F172A</color> -->
- <!-- Azul Medianoche muy oscuro -->
-    <!-- <color name="colorPrimaryDark">#020617</color> -->
-
-    <!-- <color name="colorAccent">#38BDF8</color> -->
- <!-- Azul Brillante para acciones -->
-    <!-- <color name="colorBackground">#F8FAFC</color> -->
- <!-- Fondo gris muy claro (casi blanco) para Residente -->
-    
-    <!-- Para modo oscuro o Admin -->
-    <!-- <color name="colorSurface">#FFFFFF</color> -->
-
-    
-    <!-- Texto -->
-    <!-- <color name="colorTextPrimary">#1E293B</color> -->
-
-    <!-- <color name="colorTextSecondary">#64748B</color> -->
+    <color name="colorAccent">#7C4DFF</color>
+    <color name="colorGreen">#4CAF50</color>
+    <color name="colorRed">#F44336</color>
+    <color name="colorAmber">#FF9800</color>
+    <color name="colorBlue">#2196F3</color>
+    <color name="colorOverlay">#80000000</color>
+    <color name="gray_light">#E2E8F0</color>
+    <color name="gray_medium">#718096</color>
 </resources>

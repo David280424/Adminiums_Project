@@ -7,6 +7,8 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class FirebaseRepository {
 
@@ -22,6 +24,13 @@ class FirebaseRepository {
         } catch (e: Exception) { Result.failure(e) }
     }
 
+    suspend fun registrarAuth(email: String, pass: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val result = auth.createUserWithEmailAndPassword(email, pass).await()
+            Result.success(result.user?.uid ?: "")
+        } catch (e: Exception) { Result.failure(e) }
+    }
+
     fun logout() = auth.signOut()
     fun getCurrentUid() = auth.currentUser?.uid
 
@@ -29,6 +38,12 @@ class FirebaseRepository {
         try {
             db.collection("condominios").get().await().toObjects(Condominio::class.java)
         } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun getCondominio(id: String): Condominio? = withContext(Dispatchers.IO) {
+        try {
+            db.collection("condominios").document(id).get().await().toObject(Condominio::class.java)
+        } catch (e: Exception) { null }
     }
 
     // ── Usuarios & Residentes ───────────────────────────────────────────────
@@ -61,44 +76,35 @@ class FirebaseRepository {
         } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun getVigilantesPorEdificio(edificioId: String): List<Usuario> = withContext(Dispatchers.IO) {
+    suspend fun setUserOnlineStatus(uid: String, isOnline: Boolean) = withContext(Dispatchers.IO) {
         try {
-            db.collection("usuarios")
-                .whereEqualTo("edificioId", edificioId)
-                .whereEqualTo("rol", "vigilante")
-                .get().await().toObjects(Usuario::class.java)
-        } catch (e: Exception) { emptyList() }
+            db.collection("usuarios").document(uid).update("isOnline", isOnline).await()
+        } catch (e: Exception) { }
     }
 
     // ── Finanzas (Pagos y Recargas) ─────────────────────────────────────────
 
     suspend fun registrarPago(pago: Pago): Boolean = withContext(Dispatchers.IO) {
         try {
+            val user = getUsuario(pago.residenteUid)
+            val building = getCondominio(pago.edificioId)
+            
             val docRef = db.collection("pagos").document()
-            val finalPago = pago.copy(id = docRef.id, estado = "Aprobado")
+            val folioGen = "ADM-" + System.currentTimeMillis().toString().takeLast(8)
+            
+            val finalPago = pago.copy(
+                id = docRef.id, 
+                estado = "Aprobado",
+                residenteNombre = user?.nombre ?: "",
+                unidad = user?.unidad ?: "",
+                edificioNombre = building?.nombre ?: "",
+                folio = folioGen
+            )
+            
             db.collection("pagos").document(docRef.id).set(finalPago).await()
             
             db.collection("usuarios").document(pago.residenteUid)
                 .update("balance", com.google.firebase.firestore.FieldValue.increment(-pago.monto))
-                .await()
-            true
-        } catch (e: Exception) { false }
-    }
-
-    suspend fun recargarBalance(uid: String, monto: Double, edificioId: String): Boolean = withContext(Dispatchers.IO) {
-        try {
-            // Se registra como un movimiento de entrada
-            val recarga = Pago(
-                residenteUid = uid,
-                edificioId = edificioId,
-                monto = monto,
-                fecha = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date()),
-                estado = "Recarga"
-            )
-            db.collection("pagos").add(recarga).await()
-            
-            db.collection("usuarios").document(uid)
-                .update("balance", com.google.firebase.firestore.FieldValue.increment(monto))
                 .await()
             true
         } catch (e: Exception) { false }
@@ -113,24 +119,114 @@ class FirebaseRepository {
         } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun getTotalRecaudadoEdificio(edificioId: String): Double = withContext(Dispatchers.IO) {
+    suspend fun getPagosPorEdificio(edificioId: String): List<Pago> = withContext(Dispatchers.IO) {
         try {
             db.collection("pagos")
                 .whereEqualTo("edificioId", edificioId)
-                .whereEqualTo("estado", "Aprobado")
-                .get().await().toObjects(Pago::class.java).sumOf { it.monto }
-        } catch (e: Exception) { 0.0 }
-    }
-
-    // ── Operaciones (Accesos y Reservas) ───────────────────────────────────
-
-    suspend fun getReservaciones(): List<Reservacion> = withContext(Dispatchers.IO) {
-        try {
-            db.collection("reservaciones").get().await().toObjects(Reservacion::class.java)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .get().await().toObjects(Pago::class.java)
         } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun getReservacionesEdificio(edificioId: String): List<Reservacion> = withContext(Dispatchers.IO) {
+    // ── Incidencias ─────────────────────────────────────────────────────────
+
+    suspend fun reportarIncidencia(incidencia: Incidencia): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val docRef = db.collection("incidencias").document()
+            db.collection("incidencias").document(docRef.id).set(incidencia.copy(id = docRef.id)).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    suspend fun getIncidenciasEdificio(edificioId: String): List<Incidencia> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("incidencias")
+                .whereEqualTo("edificioId", edificioId)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .get().await().toObjects(Incidencia::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun getIncidenciasPorEstado(edificioId: String, estado: String): List<Incidencia> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("incidencias")
+                .whereEqualTo("edificioId", edificioId)
+                .whereEqualTo("estado", estado)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .get().await().toObjects(Incidencia::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun getMisIncidencias(uid: String): List<Incidencia> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("incidencias")
+                .whereEqualTo("residenteUid", uid)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .get().await().toObjects(Incidencia::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun actualizarEstadoIncidencia(id: String, estado: String, respuesta: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val updateData = mutableMapOf<String, Any>(
+                "estado" to estado,
+                "respuestaAdmin" to respuesta
+            )
+            if (estado == "Resuelta") {
+                updateData["fechaResolucion"] = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+            }
+            db.collection("incidencias").document(id).update(updateData).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    // ── Limpieza ────────────────────────────────────────────────────────────
+
+    suspend fun crearTareaLimpieza(tarea: TareaLimpieza): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val docRef = db.collection("tareas_limpieza").document()
+            db.collection("tareas_limpieza").document(docRef.id).set(tarea.copy(id = docRef.id)).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    suspend fun getTareasLimpieza(edificioId: String): List<TareaLimpieza> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("tareas_limpieza")
+                .whereEqualTo("edificioId", edificioId)
+                .get().await().toObjects(TareaLimpieza::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun getTareasLimpiezaActivas(edificioId: String): List<TareaLimpieza> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("tareas_limpieza")
+                .whereEqualTo("edificioId", edificioId)
+                .whereEqualTo("completada", false)
+                .get().await().toObjects(TareaLimpieza::class.java)
+        } catch (e: Exception) { emptyList() }
+    }
+
+    suspend fun marcarTareaCompletada(id: String, notas: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+            db.collection("tareas_limpieza").document(id)
+                .update("completada", true, "fechaCompletada", fecha, "notas", notas).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    // ── Operaciones (Compatibilidad con funciones antiguas de Vigilante y Reservas) ──
+
+    suspend fun crearReservacion(reservacion: Reservacion): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val docRef = db.collection("reservaciones").document()
+            db.collection("reservaciones").document(docRef.id).set(reservacion.copy(id = docRef.id)).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    suspend fun getReservacionesPorEdificio(edificioId: String): List<Reservacion> = withContext(Dispatchers.IO) {
         try {
             db.collection("reservaciones")
                 .whereEqualTo("edificioId", edificioId)
@@ -138,11 +234,9 @@ class FirebaseRepository {
         } catch (e: Exception) { emptyList() }
     }
 
-    suspend fun crearReservacion(reservacion: Reservacion): Boolean = withContext(Dispatchers.IO) {
+    suspend fun eliminarReservacion(id: String): Boolean = withContext(Dispatchers.IO) {
         try {
-            val docRef = db.collection("reservaciones").document()
-            val finalRes = reservacion.copy(id = docRef.id)
-            db.collection("reservaciones").document(docRef.id).set(finalRes).await()
+            db.collection("reservaciones").document(id).delete().await()
             true
         } catch (e: Exception) { false }
     }
@@ -152,25 +246,6 @@ class FirebaseRepository {
             db.collection("accesos").add(acceso).await()
             true
         } catch (e: Exception) { false }
-    }
-
-    suspend fun getAccesosEdificio(edificioId: String, fecha: String): List<RegistroAcceso> = withContext(Dispatchers.IO) {
-        try {
-            db.collection("accesos")
-                .whereEqualTo("edificioId", edificioId)
-                .whereEqualTo("fecha", fecha)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get().await().toObjects(RegistroAcceso::class.java)
-        } catch (e: Exception) { emptyList() }
-    }
-
-    suspend fun getAccesosPorFecha(fecha: String): List<RegistroAcceso> = withContext(Dispatchers.IO) {
-        try {
-            db.collection("accesos")
-                .whereEqualTo("fecha", fecha)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get().await().toObjects(RegistroAcceso::class.java)
-        } catch (e: Exception) { emptyList() }
     }
 
     suspend fun validarVisitante(qrCode: String): Visitante? = withContext(Dispatchers.IO) {
@@ -187,5 +262,14 @@ class FirebaseRepository {
                 visitante
             } else null
         } catch (e: Exception) { null }
+    }
+
+    suspend fun getAccesosPorFecha(fecha: String): List<RegistroAcceso> = withContext(Dispatchers.IO) {
+        try {
+            db.collection("accesos")
+                .whereEqualTo("fecha", fecha)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get().await().toObjects(RegistroAcceso::class.java)
+        } catch (e: Exception) { emptyList() }
     }
 }

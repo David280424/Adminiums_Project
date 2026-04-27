@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_card_border">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorBorderPrimary"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/tvDetalleTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextPrimary"/>
+
+    <TextView
+        android:id="@+id/tvDetalleInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="@color/colorTextSecondary"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvDetalleDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/colorTextPrimary"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorSurfaceSecondary"
+        android:padding="12dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Respuesta del administrador"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Adminiums.TextInputLayout">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRespuestaAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Escribe una resolución..."
+            android:minLines="3"
+            android:gravity="top"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
+
+        <Button
+            android:id="@+id/btnMarcarPendiente"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Pendiente"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/colorError"/>
+
+        <Button
+            android:id="@+id/btnMarcarProceso"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="En Proceso"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/colorWarning"/>
+
+        <Button
+            android:id="@+id/btnMarcarResuelta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:text="Resuelta"
+            style="@style/Widget.Adminiums.Button.Primary"
+            android:backgroundTint="@color/colorSuccess"/>
+    </LinearLayout>
+
+</LinearLayout>

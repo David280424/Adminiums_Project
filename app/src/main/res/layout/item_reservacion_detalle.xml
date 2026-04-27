@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_reservacion_detalle.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal" android:padding="10dp"
     android:gravity="center_vertical"
-    android:background="@color/gray_light"
+    android:background="@color/colorSurfaceSecondary"
     android:layout_marginBottom="6dp">
 
     <TextView android:layout_width="24dp" android:layout_height="wrap_content"
@@ -14,7 +13,7 @@
         android:layout_weight="1" android:orientation="vertical">
         <TextView android:id="@+id/tvResAmenidad"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textSize="14sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
+            android:textSize="14sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary"/>
         <TextView android:id="@+id/tvResFecha"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>

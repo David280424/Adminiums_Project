@@ -8,26 +8,79 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:title="Mi Hogar"
-            android:titleTextColor="@color/white"
-            app:layout_scrollFlags="scroll|enterAlways">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-            <ImageButton
-                android:id="@+id/btnLogout"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_lock_power_off"
-                app:tint="@color/white"/>
-        </com.google.android.material.appbar.MaterialToolbar>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_header_residente"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:paddingTop="20dp" android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/tvBienvenido"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Bienvenido" android:textSize="18sp" android:textStyle="bold"
+                        android:textColor="@color/white"/>
+                    <TextView android:id="@+id/tvUnidad"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Unidad" android:textSize="12sp" android:textColor="#B3FFFFFF"
+                        android:layout_marginTop="1dp"/>
+                </LinearLayout>
+
+                <Button android:id="@+id/btnLogout"
+                    android:layout_width="wrap_content" android:layout_height="32dp"
+                    android:text="Salir" android:textSize="11sp" android:textColor="@color/white"
+                    android:backgroundTint="#26FFFFFF"
+                    style="@style/Widget.MaterialComponents.Button"
+                    app:strokeColor="#4DFFFFFF" app:strokeWidth="1dp" app:cornerRadius="8dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_stat_card"
+                android:padding="14dp"
+                android:layout_marginTop="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Balance pendiente" android:textSize="11sp"
+                        android:textColor="#B3FFFFFF" android:layout_marginBottom="2dp"/>
+                    <TextView android:id="@+id/tvBalance"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="$0.00" android:textSize="22sp" android:textStyle="bold"
+                        android:textColor="@color/colorRed"/>
+                    <TextView android:id="@+id/tvFechaVencimiento"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="--" android:textSize="10sp" android:textColor="#99FFFFFF"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <Button android:id="@+id/btnPagar"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Pagar ahora" android:textSize="12sp"
+                    android:textColor="@color/colorResidente" android:backgroundTint="@color/white"
+                    style="@style/Widget.MaterialComponents.Button"
+                    app:cornerRadius="8dp"
+                    android:paddingHorizontal="14dp" android:paddingVertical="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -38,148 +91,136 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
 
-            <!-- Card de Saldo Dinámico -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="8dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/white"
-                    android:padding="24dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Saldo Disponible"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1"/>
-
-                    <TextView
-                        android:id="@+id/tvBalance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$0.00"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginTop="4dp"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#F0F2F5"
-                        android:layout_marginVertical="16dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRecargarFondos"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:text="➕ Añadir Fondos"
-                            app:backgroundTint="@color/colorGreen"
-                            android:textSize="12sp"
-                            app:cornerRadius="12dp"/>
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnPagar"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:text="💳 Pagar Cuota"
-                            app:backgroundTint="@color/colorPrimary"
-                            android:textSize="12sp"
-                            app:cornerRadius="12dp"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Bienvenida y Unidad -->
-            <TextView
-                android:id="@+id/tvBienvenido"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hola, David"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:layout_marginBottom="4dp"/>
-
-            <TextView
-                android:id="@+id/tvUnidad"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Unidad 654 • Edificio A"
-                android:textSize="14sp"
-                android:textColor="@color/colorTextSecondary"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Panel de Servicios -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:rowCount="1"
-                android:alignmentMode="alignMargins"
-                android:columnOrderPreserved="false">
+                android:columnCount="2" android:rowCount="3"
+                android:paddingStart="16dp" android:paddingEnd="16dp"
+                android:paddingTop="14dp" android:paddingBottom="6dp">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/btnReservar"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📅" android:textSize="32sp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservar Áreas" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                <LinearLayout android:id="@+id/qaCardPagar"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💳" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pagar cuota" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:id="@+id/tvProximoPago" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00 pendiente" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/btnGenerarQR"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📱" android:textSize="32sp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="QR Visitante" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="8dp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                <LinearLayout android:id="@+id/btnReservar"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginStart="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📅" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservar área" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Piscina · Gym · Salón" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
 
+                <LinearLayout android:id="@+id/btnGenerarQR"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📱" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="QR visitante" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Invitar a alguien" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/btnMiQR"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginStart="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🪪" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mi QR de acceso" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Entrada rápida" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/btnReportarIncidencia"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginEnd="6dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🚨" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reportar falla" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Incidencias" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/btnSolicitarLimpieza"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_marginStart="6dp"
+                    android:orientation="vertical" android:padding="14dp"
+                    android:background="@drawable/bg_card_border">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🧹" android:textSize="20sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pedir limpieza" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary" android:layout_marginTop="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Áreas comunes" android:textSize="10sp" android:textColor="@color/colorTextSecondary" android:layout_marginTop="2dp"/>
+                </LinearLayout>
             </GridLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_card_border">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Estado de cuenta" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/colorTextPrimary"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:paddingTop="10dp" android:paddingBottom="10dp"
+                    android:background="@color/colorSurfaceSecondary"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Cuota mensual"
+                        android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <TextView android:id="@+id/tvCuotaMensual" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="$0.00"
+                        android:textSize="12sp" android:textColor="@color/colorTextPrimary"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="0.5dp"
+                    android:background="@color/colorBorderTertiary"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Próximo pago"
+                        android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <TextView android:id="@+id/tvProximoPagoFecha" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="--"
+                        android:textSize="12sp" android:textColor="@color/colorTextPrimary"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="0.5dp"
+                    android:background="@color/colorBorderTertiary"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:paddingTop="8dp" android:paddingBottom="14dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Balance acumulado"
+                        android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
+                    <TextView android:id="@+id/tvBalanceAcumulado" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="$0.00"
+                        android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorError"/>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

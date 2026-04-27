@@ -45,21 +45,14 @@
         <activity android:name=".ui.residente.ReservarAmenidadActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.residente.PagarCuotaActivity" android:exported="false"/>
         <activity android:name=".ui.residente.MiQRActivity" android:exported="false"/>
-        <activity android:name=".ui.residente.ReportarIncidenciaActivity" android:exported="false" />
         <activity android:name=".ui.vigilante.VigilanteActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
-
-        <!-- ACTIVITIES DE ADMIN -->
         <activity android:name=".ui.admin.AdminActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.admin.ResidenteDetalleActivity"  android:exported="false"/>
         <activity android:name=".ui.admin.VigilantesAdminActivity"   android:exported="false"/>
         <activity android:name=".ui.admin.HistorialEntradasActivity" android:exported="false"/>
-        <activity android:name=".ui.admin.ManejoIncidenciasActivity" android:exported="false" />
-        <activity android:name=".ui.admin.IncidenciasAdminActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AmenidadesAdminActivity" android:exported="false" />
-        <activity android:name=".ui.admin.PagosResidenteAdminActivity" android:exported="false" />
-
-        <!-- LIMPIEZA -->
-        <activity android:name=".ui.limpieza.LimpiezaActivity" android:exported="false" />
+        <activity android:name=".ui.limpieza.LimpiezaActivity" android:exported="false"/>
+        <activity android:name=".ui.residente.ReportarIncidenciaActivity" android:exported="false"/>
+        <activity android:name=".ui.admin.ManejoIncidenciasActivity" android:exported="false"/>
 
     </application>
 </manifest>

@@ -1,9 +1,70 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Adminiums1" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Adminiums1" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/colorPrimaryLight</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorTextPrimary</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="materialButtonStyle">@style/Widget.Adminiums.Button</item>
+        <item name="textInputStyle">@style/Widget.Adminiums.TextInputLayout</item>
     </style>
 
-    <style name="Theme.Adminiums1" parent="Base.Theme.Adminiums1" />
+    <style name="Widget.Adminiums.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="Widget.Adminiums.Button.Primary">
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Widget.Adminiums.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="strokeColor">@color/colorBorderSecondary</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+    <style name="Widget.Adminiums.Button.Danger" parent="Widget.Adminiums.Button">
+        <item name="backgroundTint">@color/colorErrorBg</item>
+        <item name="android:textColor">@color/colorError</item>
+    </style>
+
+    <style name="Widget.Adminiums.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/colorBorderSecondary</item>
+        <item name="boxStrokeWidth">0.5dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxBackgroundColor">@color/colorSurfaceSecondary</item>
+        <item name="hintTextColor">@color/colorTextSecondary</item>
+        <item name="android:textColorHint">@color/colorTextTertiary</item>
+    </style>
+
+    <style name="Theme.Adminiums.AdminToolbar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
+
+    <style name="Theme.Adminiums.ResidenteToolbar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <item name="colorPrimary">@color/colorResidente</item>
+    </style>
+
+    <style name="Theme.Adminiums.VigilanteToolbar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <item name="colorPrimary">@color/colorVigilante</item>
+    </style>
+
+    <style name="StatCard">
+        <item name="android:background">@drawable/bg_stat_card</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
 </resources>

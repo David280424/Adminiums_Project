@@ -6,47 +6,35 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.adminiums1.databinding.ActivityLoginBinding
-import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.AdminActivity
 import com.example.adminiums1.ui.residente.ResidenteActivity
 import com.example.adminiums1.ui.vigilante.VigilanteActivity
+import com.example.adminiums1.ui.limpieza.LimpiezaActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val repo = FirebaseRepository()
-    private var rol: String = "residente"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        rol = intent.getStringExtra("rol") ?: "residente"
-        val rolNombre = when (rol) {
-            "residente" -> "Residente"
-            "vigilante" -> "Vigilante"
-            "admin" -> "Administrador"
-            else -> "Residente"
+        // Botón para volver al selector de roles
+        binding.btnCambiarRol.setOnClickListener {
+            val intent = Intent(this, RolSelectorActivity::class.java)
+            startActivity(intent)
+            finish()
         }
-        binding.tvRolTitle.text = rolNombre
-        binding.tvSubtitle.text = "Inicio de Sesión - $rolNombre"
 
-        binding.btnCambiarRol.setOnClickListener { finish() }
-
-        // Ocultar botón de registro para admin (acceso privilegiado)
-        if (rol == "admin") {
-            binding.tvIrRegistro.visibility = View.GONE
-        } else {
-            binding.tvIrRegistro.setOnClickListener {
-                startActivity(Intent(this, RegistroActivity::class.java).apply {
-                    putExtra("rol", rol)
-                })
-            }
+        binding.tvIrRegistro.setOnClickListener {
+            startActivity(Intent(this, RegistroActivity::class.java))
         }
 
         binding.btnLogin.setOnClickListener {
@@ -61,54 +49,44 @@ class LoginActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
             binding.btnLogin.isEnabled = false
 
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 val result = repo.login(email, password)
                 
-                if (result.isSuccess) {
-                    val uid = result.getOrNull() ?: ""
-                    var usuario = repo.getUsuario(uid)
-                    
-                    // --- AUTO-REPARACIÓN DE ADMIN ---
-                    if (usuario == null && rol == "admin") {
-                        val nuevoAdmin = Usuario(
-                            uid = uid,
-                            nombre = "Administrador Principal",
-                            email = email,
-                            rol = "admin",
-                            unidad = "Administración",
-                            balance = 0.0
-                        )
-                        repo.crearUsuario(nuevoAdmin)
-                        usuario = nuevoAdmin
+                withContext(Dispatchers.Main) {
+                    if (result.isSuccess) {
+                        val uid = result.getOrNull() ?: ""
+                        checkUserRoleAndNavigate(uid)
+                    } else {
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnLogin.isEnabled = true
+                        Toast.makeText(this@LoginActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                     }
-                    // --------------------------------
+                }
+            }
+        }
+    }
 
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnLogin.isEnabled = true
-
-                    if (usuario == null) {
-                        Toast.makeText(this@LoginActivity, "Usuario no encontrado en BD", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
-                    
-                    if (usuario.rol != rol) {
-                        Toast.makeText(this@LoginActivity, "Rol incorrecto para este acceso", Toast.LENGTH_SHORT).show()
-                        repo.logout()
-                        return@launch
-                    }
-                    
-                    val intent = when (rol) {
+    private fun checkUserRoleAndNavigate(uid: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val usuario = repo.getUsuario(uid)
+            withContext(Dispatchers.Main) {
+                binding.progressBar.visibility = View.GONE
+                if (usuario != null) {
+                    val intent = when (usuario.rol) {
+                        "admin" -> Intent(this@LoginActivity, AdminActivity::class.java)
                         "residente" -> Intent(this@LoginActivity, ResidenteActivity::class.java)
                         "vigilante" -> Intent(this@LoginActivity, VigilanteActivity::class.java)
-                        "admin" -> Intent(this@LoginActivity, AdminActivity::class.java)
-                        else -> Intent(this@LoginActivity, ResidenteActivity::class.java)
+                        "limpieza" -> Intent(this@LoginActivity, LimpiezaActivity::class.java)
+                        else -> {
+                            Toast.makeText(this@LoginActivity, "Rol no reconocido", Toast.LENGTH_SHORT).show()
+                            return@withContext
+                        }
                     }
                     startActivity(intent)
                     finishAffinity()
                 } else {
-                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(this@LoginActivity, "Error al obtener perfil", Toast.LENGTH_SHORT).show()
                     binding.btnLogin.isEnabled = true
-                    Toast.makeText(this@LoginActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

@@ -2,37 +2,20 @@ package com.example.adminiums1.ui.admin
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ItemResidenteBinding
 import com.example.adminiums1.model.Usuario
 
-/**
- * Adapter de la lista de residentes en AdminActivity.
- * Al hacer click → abre ResidenteDetalleActivity.
- * Filtro en tiempo real por nombre o unidad.
- */
 class ResidentesAdapter(
     private val onClick: (Usuario) -> Unit
 ) : RecyclerView.Adapter<ResidentesAdapter.ViewHolder>() {
 
-    private var listaCompleta: List<Usuario> = emptyList()
     private var listaFiltrada: List<Usuario> = emptyList()
 
     fun setDatos(datos: List<Usuario>) {
-        listaCompleta = datos
         listaFiltrada = datos
-        notifyDataSetChanged()
-    }
-
-    fun filtrar(query: String) {
-        listaFiltrada = if (query.isBlank()) {
-            listaCompleta
-        } else {
-            val q = query.trim().lowercase()
-            listaCompleta.filter {
-                it.nombre.lowercase().contains(q) || it.unidad.lowercase().contains(q)
-            }
-        }
         notifyDataSetChanged()
     }
 
@@ -45,23 +28,43 @@ class ResidentesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
         holder.bind(listaFiltrada[position])
 
-    inner class ViewHolder(private val b: ItemResidenteBinding) :
-        RecyclerView.ViewHolder(b.root) {
+    inner class ViewHolder(private val binding: ItemResidenteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(u: Usuario) {
-            b.tvResidenteNombre.text  = u.nombre
-            b.tvResidenteUnidad.text  = "Unidad: ${u.unidad}"
-            b.tvResidenteBalance.text = "Adeudo: $${"%.2f".format(u.balance)}"
+        fun bind(usuario: Usuario) {
+            binding.tvResidenteNombre.text = usuario.nombre
+            binding.tvResidenteUnidad.text = "Unidad ${usuario.unidad}"
 
-            val (texto, color) = when {
-                u.balance <= 0 -> "Al día"    to 0xFF48BB78.toInt()
-                else           -> "Pendiente" to 0xFFF56565.toInt()
+            val iniciales = usuario.nombre
+                .split(" ")
+                .take(2)
+                .mapNotNull { it.firstOrNull()?.toString() }
+                .joinToString("")
+                .uppercase()
+
+            binding.tvResidenteAvatar.text = iniciales
+
+            if (usuario.balance < 0) {
+                binding.tvResidenteAvatar.setBackgroundResource(R.drawable.bg_avatar_red)
+                binding.tvResidenteAvatar.setTextColor(
+                    ContextCompat.getColor(itemView.context, R.color.colorAvatarRedText))
+                binding.tvResidenteEstado.text = "-$${abs(usuario.balance)}"
+                binding.tvResidenteEstado.setBackgroundResource(R.drawable.bg_badge_red)
+                binding.tvResidenteEstado.setTextColor(
+                    ContextCompat.getColor(itemView.context, R.color.colorError))
+            } else {
+                binding.tvResidenteAvatar.setBackgroundResource(R.drawable.bg_avatar_blue)
+                binding.tvResidenteAvatar.setTextColor(
+                    ContextCompat.getColor(itemView.context, R.color.colorAvatarBlueText))
+                binding.tvResidenteEstado.text = "Al día"
+                binding.tvResidenteEstado.setBackgroundResource(R.drawable.bg_badge_green)
+                binding.tvResidenteEstado.setTextColor(
+                    ContextCompat.getColor(itemView.context, R.color.colorSuccess))
             }
-            b.tvResidenteEstado.text = texto
-            b.tvResidenteEstado.setBackgroundColor(color)
 
-            // Click abre el detalle del residente
-            b.root.setOnClickListener { onClick(u) }
+            binding.root.setOnClickListener { onClick(usuario) }
         }
+        
+        private fun abs(n: Double): String = "%.2f".format(kotlin.math.abs(n))
     }
 }

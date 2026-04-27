@@ -13,7 +13,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorResidente"
             android:title="Reservar Amenidades"
             android:titleTextColor="@color/white"
             app:layout_scrollFlags="scroll|enterAlways"/>
@@ -36,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -49,7 +50,7 @@
                         android:text="1. Selecciona una amenidad"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/colorResidente"
                         android:layout_marginBottom="12dp"/>
 
                     <GridLayout
@@ -64,7 +65,7 @@
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
                             android:text="🏊 Piscina"
-                            app:backgroundTint="@color/colorPrimary"
+                            app:backgroundTint="@color/colorResidente"
                             android:textColor="@color/white"/>
 
                         <com.google.android.material.button.MaterialButton
@@ -74,8 +75,8 @@
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
                             android:text="🏋️ Gimnasio"
-                            app:backgroundTint="@color/gray_medium"
-                            android:textColor="@color/colorPrimary"/>
+                            app:backgroundTint="@color/colorBorderTertiary"
+                            android:textColor="@color/colorTextPrimary"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSalon"
@@ -84,8 +85,8 @@
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
                             android:text="🎉 Salón"
-                            app:backgroundTint="@color/gray_medium"
-                            android:textColor="@color/colorPrimary"/>
+                            app:backgroundTint="@color/colorBorderTertiary"
+                            android:textColor="@color/colorTextPrimary"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnBBQ"
@@ -94,8 +95,8 @@
                             android:layout_columnWeight="1"
                             android:layout_margin="4dp"
                             android:text="🔥 BBQ"
-                            app:backgroundTint="@color/gray_medium"
-                            android:textColor="@color/colorPrimary"/>
+                            app:backgroundTint="@color/colorBorderTertiary"
+                            android:textColor="@color/colorTextPrimary"/>
                     </GridLayout>
 
                     <TextView
@@ -115,7 +116,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -128,7 +130,7 @@
                         android:text="2. Selecciona una fecha"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/colorResidente"
                         android:layout_marginBottom="8dp"/>
 
                     <CalendarView
@@ -155,7 +157,8 @@
                 android:layout_marginBottom="24dp"
                 android:visibility="gone"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/colorSurface">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -168,7 +171,7 @@
                         android:text="3. Selecciona un horario"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"/>
+                        android:textColor="@color/colorResidente"/>
 
                     <TextView
                         android:layout_width="wrap_content"
