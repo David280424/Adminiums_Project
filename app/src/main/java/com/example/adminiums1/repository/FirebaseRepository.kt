@@ -94,7 +94,6 @@ class FirebaseRepository {
             
             val finalPago = pago.copy(
                 id = docRef.id, 
-                estado = "Aprobado",
                 residenteNombre = user?.nombre ?: "",
                 unidad = user?.unidad ?: "",
                 edificioNombre = building?.nombre ?: "",
@@ -103,9 +102,12 @@ class FirebaseRepository {
             
             db.collection("pagos").document(docRef.id).set(finalPago).await()
             
-            db.collection("usuarios").document(pago.residenteUid)
-                .update("balance", com.google.firebase.firestore.FieldValue.increment(-pago.monto))
-                .await()
+            // Si el pago es aprobado, actualizar balance
+            if (finalPago.estado == "Aprobado") {
+                db.collection("usuarios").document(pago.residenteUid)
+                    .update("balance", com.google.firebase.firestore.FieldValue.increment(-pago.monto))
+                    .await()
+            }
             true
         } catch (e: Exception) { false }
     }
@@ -212,6 +214,13 @@ class FirebaseRepository {
             val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
             db.collection("tareas_limpieza").document(id)
                 .update("completada", true, "fechaCompletada", fecha, "notas", notas).await()
+            true
+        } catch (e: Exception) { false }
+    }
+
+    suspend fun eliminarTareaLimpieza(id: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            db.collection("tareas_limpieza").document(id).delete().await()
             true
         } catch (e: Exception) { false }
     }

@@ -8,10 +8,13 @@ data class Pago(
     val edificioId: String = "",
     val edificioNombre: String = "",
     val monto: Double = 0.0,
-    val concepto: String = "Cuota mensual", // "Cuota mensual", "Cuota extraordinaria", "Multa", "Mantenimiento", "Otro"
-    val metodoPago: String = "Efectivo",    // "Efectivo", "Transferencia", "Tarjeta", "App"
-    val referencia: String = "",
+    val concepto: String = "Cuota mensual",
+    val metodoPago: String = "",       // "Efectivo-OXXO", "Tarjeta", "Transferencia", "Efectivo directo"
+    val referencia: String = "",       // número de referencia OXXO o transferencia
+    val ultimosCuatroDigitos: String = "", // solo para tarjeta
+    val marcaTarjeta: String = "",     // "Visa", "Mastercard", "Amex", solo para tarjeta
     val fecha: String = "",
     val folio: String = "",
-    val estado: String = ""
+    val estado: String = "",           // "Aprobado", "Pendiente verificación", "Rechazado"
+    val comprobante: String = ""       // reservado para URL foto futura
 )

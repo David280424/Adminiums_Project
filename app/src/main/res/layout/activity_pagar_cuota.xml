@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/colorBackground">
 
     <ViewFlipper
@@ -23,24 +22,22 @@
                 android:background="@drawable/bg_header_residente"
                 android:orientation="vertical"
                 android:padding="20dp">
-
                 <ImageButton
-                    android:id="@+id/btnBackPaso1"
+                    android:id="@+id/btnBackResumen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_revert"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_revert"
                     app:tint="@color/white"
-                    android:layout_marginBottom="8dp"
                     android:contentDescription="Regresar"/>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Mi Cuota"
+                    android:textColor="@color/white"
                     android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <androidx.core.widget.NestedScrollView
@@ -54,70 +51,113 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp"
-                        android:layout_marginBottom="16dp">
+                        app:cardElevation="2dp">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="16dp">
-                            <TextView android:id="@+id/tvResumenNombre" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16sp" android:textColor="@color/colorTextPrimary"/>
-                            <TextView android:id="@+id/tvResumenUnidad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/colorTextSecondary" android:textSize="14sp"/>
-                            <TextView android:id="@+id/tvResumenEdificio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/colorTextSecondary" android:textSize="14sp"/>
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
+                            <TextView
+                                android:id="@+id/tvResumenNombre"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvResumenUnidadEdificio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorTextSecondary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp"
-                        android:layout_marginBottom="16dp">
+                        app:cardElevation="2dp">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp"
-                            android:gravity="center">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Monto a pagar" android:textSize="12sp"/>
-                            <TextView android:id="@+id/tvMontoGrande" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textSize="36sp" android:textStyle="bold" android:textColor="@color/colorPrimary"/>
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monto a pagar"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvMontoGrande"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="$0.00"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="36sp"
+                                android:textStyle="bold" />
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/chipVencimiento"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Vence: --"
-                                app:chipBackgroundColor="@color/colorErrorBg"
-                                android:textColor="@color/colorError"/>
+                                android:textColor="@color/colorError"
+                                app:chipBackgroundColor="@color/colorErrorBg" />
 
-                            <TextView android:id="@+id/tvBalanceActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:layout_marginTop="4dp"/>
+                            <TextView
+                                android:id="@+id/tvBalanceActual"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textSize="13sp" />
 
-                            <TextView android:id="@+id/tvConceptoDetalle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cuota mensual" android:layout_marginTop="8dp" android:textSize="13sp"/>
+                            <TextView
+                                android:id="@+id/tvConceptoActual"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Cuota mensual"
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Últimos movimientos" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Últimos movimientos"
+                        android:textStyle="bold" />
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvUltimosPagos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"/>
-
+                        android:nestedScrollingEnabled="false" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnProcederPago"
+                android:id="@+id/btnIrAPaso2"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_margin="16dp"
                 android:text="PROCEDER AL PAGO"
-                app:cornerRadius="12dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
         <!-- PASO 2: FORMULARIO -->
@@ -127,182 +167,519 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="¿Cómo deseas pagar?"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="24dp"/>
-
-            <RadioGroup
-                android:id="@+id/rgMetodoPago"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <RadioButton android:id="@+id/rbEfectivo" android:layout_width="match_parent" android:layout_height="56dp" android:text="Efectivo 💵" android:textSize="16sp"/>
-                <RadioButton android:id="@+id/rbTransferencia" android:layout_width="match_parent" android:layout_height="56dp" android:text="Transferencia 🏦" android:textSize="16sp"/>
-                <RadioButton android:id="@+id/rbTarjeta" android:layout_width="match_parent" android:layout_height="56dp" android:text="Tarjeta 💳" android:textSize="16sp"/>
-            </RadioGroup>
-
             <LinearLayout
-                android:id="@+id/layoutTransferenciaInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:padding="12dp"
-                android:background="@drawable/bg_card_border"
-                android:layout_marginTop="16dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Datos para transferencia:" android:textStyle="bold" android:textSize="12sp"/>
-                <TextView android:id="@+id/tvClabeCondominio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CLABE: --" android:textSize="14sp" android:layout_marginTop="4dp"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
+                <ImageButton
+                    android:id="@+id/btnBackPaso2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Número de referencia"
-                    style="@style/Widget.Adminiums.TextInputLayout"
-                    android:layout_marginTop="12dp">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etReferencia"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Regresar"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="@color/colorTextPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="¿Cómo deseas pagar?"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Notas opcionales"
-                style="@style/Widget.Adminiums.TextInputLayout"
-                android:layout_marginTop="16dp">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNotasPago"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="24dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/methodOxxo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/colorBorderTertiary"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="OXXO PAY"
+                                android:textColor="@color/colorOxxo"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Paga en efectivo"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Referencia de 18 dígitos"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/methodTransfer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/colorBorderTertiary"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🏦"
+                                android:textSize="24sp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Transferencia / SPEI"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Confirmación en 24h"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/methodCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/colorBorderTertiary"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="💳"
+                                android:textSize="24sp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Tarjeta de Crédito/Débito"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvSavedCard"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Visa • Mastercard"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/methodCash"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/colorBorderTertiary"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="💵"
+                                android:textSize="24sp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Pago en ventanilla"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Directo en administración"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:id="@+id/layoutFormOxxo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardBackgroundColor="@color/colorSurfaceSecondary"
+                            app:cardCornerRadius="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="REFERENCIA OXXO PAY"
+                                    android:textSize="10sp" />
+
+                                <TextView
+                                    android:id="@+id/tvOxxoRef"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="monospace"
+                                    android:text="0000 0000 0000 0000 00"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnCopyRef"
+                                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="COPIAR REFERENCIA"
+                                    android:textSize="11sp" />
+
+                                <ImageView
+                                    android:id="@+id/ivBarcode"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="80dp"
+                                    android:layout_marginTop="16dp"
+                                    android:scaleType="fitCenter" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="4dp"
+                            android:text="1. Acude al OXXO\n2. Menciona Pago de Servicio\n3. Dicta la referencia"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutFormTransfer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tvTransferDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_card_border"
+                            android:padding="16dp"
+                            android:text="Cargando datos bancarios..."
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.Adminiums.TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:hint="Referencia / Folio bancario">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etTransferRef"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutFormCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.Adminiums.TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Número de tarjeta"
+                            app:startIconDrawable="@android:drawable/ic_menu_camera">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etCardNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.Adminiums.TextInputLayout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="MM/AA">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etCardExpiry"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.Adminiums.TextInputLayout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:hint="CVV">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etCardCvv"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="numberPassword"
+                                    android:maxLength="4" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <com.google.android.material.checkbox.MaterialCheckBox
+                            android:id="@+id/cbSaveCard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Recordar esta tarjeta" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
 
-            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
-
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmarPago"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAtrasPaso1"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="ATRÁS"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_marginEnd="8dp"/>
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnConfirmarPago"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="2"
-                    android:text="CONFIRMAR PAGO"
-                    app:cornerRadius="12dp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
+                android:layout_height="56dp"
+                android:text="CONFIRMAR PAGO"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
         <!-- PASO 3: RECIBO -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center_horizontal">
+            android:padding="16dp">
 
             <ImageView
                 android:id="@+id/ivCheckAnim"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="40dp"
+                android:contentDescription="Éxito"
                 android:src="@android:drawable/checkbox_on_background"
-                app:tint="@color/colorSuccess"
-                android:layout_marginTop="32dp"
-                android:contentDescription="Éxito"/>
+                app:tint="@color/colorSuccess" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¡Pago Exitoso!"
-                android:textSize="24sp"
-                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:text="¡Registro Exitoso!"
                 android:textColor="@color/colorSuccess"
-                android:layout_marginTop="16dp"/>
+                android:textSize="26sp"
+                android:textStyle="bold" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardReciboFinal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                android:layout_marginTop="32dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
-                    <TextView android:id="@+id/tvReciboFolio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
-                    <TextView android:id="@+id/tvReciboFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/colorTextSecondary"/>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/colorBorderTertiary" android:layout_marginVertical="12dp"/>
+                    android:padding="24dp">
 
-                    <TextView android:id="@+id/tvReciboDatoResidente" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="14sp"/>
-                    <TextView android:id="@+id/tvReciboDatoEdificio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp"/>
+                    <TextView
+                        android:id="@+id/tvReciboFolio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Folio: ADM-000000"
+                        android:textStyle="bold" />
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/colorBorderTertiary" android:layout_marginVertical="12dp"/>
+                    <TextView
+                        android:id="@+id/tvReciboFecha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="12sp" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Monto:"/>
-                        <TextView android:id="@+id/tvReciboMonto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Método:"/>
-                        <TextView android:id="@+id/tvReciboMetodo" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Concepto:"/>
-                        <TextView android:id="@+id/tvReciboConcepto" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="@color/colorBorderTertiary" />
+
+                    <TextView
+                        android:id="@+id/tvReciboResidente"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvReciboMonto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="$0.00"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvReciboMetodo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvReciboEstado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_badge_green"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="APROBADO"
+                        android:textColor="@color/colorSuccess"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnShareImg"
+                android:id="@+id/btnShareRecibo"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="Compartir como imagen"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                android:text="COMPARTIR PDF" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDownloadPdf"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="Descargar PDF"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="8dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnVolverInicio"
+                android:id="@+id/btnFinalizar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:layout_marginBottom="16dp"
                 android:text="VOLVER AL INICIO"
-                app:cornerRadius="12dp"
-                android:layout_marginBottom="16dp"/>
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
     </ViewFlipper>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

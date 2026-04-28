@@ -61,10 +61,16 @@
     <!-- ── Avatar Chips ── -->
     <color name="colorAvatarBlueBg">#E6F1FB</color>
     <color name="colorAvatarBlueText">#185FA5</color>
-    <color name="colorAvatarGreenBg">#EAF3DE</color>
-    <color name="colorAvatarGreenText">#3B6D11</color>
     <color name="colorAvatarRedBg">#FCEBEB</color>
     <color name="colorAvatarRedText">#A32D2D</color>
+
+    <!-- ── Métodos de Pago ── -->
+    <color name="colorOxxo">#EE1C25</color>
+    <color name="colorVisa">#1A1F71</color>
+    <color name="colorMastercard">#EB001B</color>
+    <color name="colorTransferencia">#1565C0</color>
+    <color name="colorEfectivo">#388E3C</color>
+    <color name="colorPendienteVerificacion">#F57C00</color>
 
     <!-- ── Utilidades ── -->
     <color name="white">#FFFFFF</color>

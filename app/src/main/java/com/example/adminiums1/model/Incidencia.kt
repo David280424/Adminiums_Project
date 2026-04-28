@@ -7,11 +7,11 @@ data class Incidencia(
     val unidad: String = "",
     val edificioId: String = "",
     val edificioNombre: String = "",
-    val categoria: String = "", // "Plomería", "Electricidad", "Ruido", "Seguridad", "Limpieza", "Otro"
-    val prioridad: String = "Normal", // "Baja", "Normal", "Alta", "Urgente"
+    val categoria: String = "",        // "Plomería", "Electricidad", "Ruido", "Seguridad", "Limpieza", "Otro"
+    val prioridad: String = "Normal",  // "Baja", "Normal", "Alta", "Urgente"
     val titulo: String = "",
     val descripcion: String = "",
-    val ubicacion: String = "", // "Unidad propia", "Pasillo", "Estacionamiento", "Jardín", "Elevador", "Otro"
+    val ubicacion: String = "",        // "Unidad propia", "Pasillo", "Estacionamiento", "Jardín", "Elevador", "Otro"
     val fecha: String = "",
     val fechaResolucion: String = "",
     val estado: String = "Pendiente",
