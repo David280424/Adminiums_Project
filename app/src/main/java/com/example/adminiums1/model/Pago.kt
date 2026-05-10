@@ -14,6 +14,7 @@ data class Pago(
     val ultimosCuatroDigitos: String = "", // solo para tarjeta
     val marcaTarjeta: String = "",     // "Visa", "Mastercard", "Amex", solo para tarjeta
     val fecha: String = "",
+    val timestamp: Long = 0L,
     val folio: String = "",
     val estado: String = "",           // "Aprobado", "Pendiente verificación", "Rechazado"
     val comprobante: String = ""       // reservado para URL foto futura

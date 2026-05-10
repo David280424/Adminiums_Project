@@ -14,5 +14,6 @@ data class TareaLimpieza(
     val fechaAsignada: String = "",
     val fechaLimite: String = "",
     val fechaCompletada: String = "",
-    val notas: String = ""
+    val notas: String = "",
+    val timestamp: Long = 0L
 )

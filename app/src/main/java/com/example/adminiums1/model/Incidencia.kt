@@ -13,6 +13,7 @@ data class Incidencia(
     val descripcion: String = "",
     val ubicacion: String = "",        // "Unidad propia", "Pasillo", "Estacionamiento", "Jardín", "Elevador", "Otro"
     val fecha: String = "",
+    val timestamp: Long = 0L,
     val fechaResolucion: String = "",
     val estado: String = "Pendiente",
     val respuestaAdmin: String = "",
