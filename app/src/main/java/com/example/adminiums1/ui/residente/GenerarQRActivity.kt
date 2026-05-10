@@ -34,7 +34,7 @@ class GenerarQRActivity : AppCompatActivity() {
         binding = ActivityGenerarQrBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener { finish() }
+        binding.toolbar.setNavigationOnClickListener { finish() }
 
         // Validar sesión al inicio
         val uid = repo.getCurrentUid()

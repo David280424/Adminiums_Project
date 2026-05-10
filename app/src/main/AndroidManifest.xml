@@ -40,26 +40,27 @@
         <activity android:name=".ui.auth.RolSelectorActivity" android:exported="false" />
         <activity android:name=".ui.auth.RegistroActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.auth.LoginActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.residente.ResidenteActivity" android:exported="false"/>
+        <activity android:name=".ui.residente.ResidenteActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.residente.GenerarQRActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.residente.ReservarAmenidadActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.residente.PagarCuotaActivity" android:exported="false"/>
+        <activity android:name=".ui.residente.PagarCuotaActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.residente.MiQRActivity" android:exported="false"/>
-        <activity android:name=".ui.residente.ReportarIncidenciaActivity" android:exported="false" />
+        <activity android:name=".ui.residente.ReportarIncidenciaActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.vigilante.VigilanteActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
 
         <!-- ACTIVITIES DE ADMIN -->
         <activity android:name=".ui.admin.AdminActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.admin.ResidenteDetalleActivity"  android:exported="false"/>
-        <activity android:name=".ui.admin.VigilantesAdminActivity"   android:exported="false"/>
-        <activity android:name=".ui.admin.HistorialEntradasActivity" android:exported="false"/>
-        <activity android:name=".ui.admin.ManejoIncidenciasActivity" android:exported="false" />
-        <activity android:name=".ui.admin.IncidenciasAdminActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AmenidadesAdminActivity" android:exported="false" />
-        <activity android:name=".ui.admin.PagosResidenteAdminActivity" android:exported="false" />
+        <activity android:name=".ui.admin.ResidenteDetalleActivity"  android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.VigilantesAdminActivity"   android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.HistorialEntradasActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.ManejoIncidenciasActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.IncidenciasAdminActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.AmenidadesAdminActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.admin.PagosResidenteAdminActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
 
         <!-- LIMPIEZA -->
-        <activity android:name=".ui.limpieza.LimpiezaActivity" android:exported="false" />
+        <activity android:name=".ui.limpieza.LimpiezaActivity" android:exported="false" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.limpieza.SolicitarLimpiezaActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
 
     </application>
 </manifest>

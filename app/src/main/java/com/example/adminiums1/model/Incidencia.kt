@@ -17,5 +17,5 @@ data class Incidencia(
     val fechaResolucion: String = "",
     val estado: String = "Pendiente",
     val respuestaAdmin: String = "",
-    val fotoUrl: String = ""
+    val fotos: List<String> = emptyList()
 )

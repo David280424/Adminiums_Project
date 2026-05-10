@@ -26,13 +26,6 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Botón para volver al selector de roles
-        binding.btnCambiarRol.setOnClickListener {
-            val intent = Intent(this, RolSelectorActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
         binding.tvIrRegistro.setOnClickListener {
             startActivity(Intent(this, RegistroActivity::class.java))
         }

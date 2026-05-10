@@ -3,6 +3,8 @@ package com.example.adminiums1.ui.admin
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityManejoIncidenciasBinding
@@ -11,6 +13,7 @@ import com.example.adminiums1.model.Incidencia
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.adapter.IncidenciasAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import coil.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,6 +79,26 @@ class IncidenciasAdminActivity : AppCompatActivity() {
         b.tvDetalleDesc.text = incidencia.descripcion
         b.tvDetalleInfo.text = "De: ${incidencia.residenteNombre} • Unidad ${incidencia.unidad}\nCategoría: ${incidencia.categoria} • Ubicación: ${incidencia.ubicacion}\nPrioridad: ${incidencia.prioridad}"
         b.etRespuestaAdmin.setText(incidencia.respuestaAdmin)
+
+        if (incidencia.fotos.isNotEmpty()) {
+            b.scrollFotos.visibility = View.VISIBLE
+            b.layoutFotosDetalle.removeAllViews()
+            incidencia.fotos.forEach { url ->
+                val imageView = ImageView(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(300, 300).apply {
+                        marginEnd = 16
+                    }
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    load(url) {
+                        crossfade(true)
+                        placeholder(android.R.drawable.ic_menu_gallery)
+                    }
+                }
+                b.layoutFotosDetalle.addView(imageView)
+            }
+        } else {
+            b.scrollFotos.visibility = View.GONE
+        }
 
         b.btnMarcarPendiente.setOnClickListener {
             actualizarEstado(incidencia.id, "Pendiente", b.etRespuestaAdmin.text.toString(), dialog)

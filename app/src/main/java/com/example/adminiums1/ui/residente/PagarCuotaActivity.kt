@@ -23,7 +23,11 @@ import com.example.adminiums1.databinding.ActivityPagarCuotaBinding
 import com.example.adminiums1.model.Pago
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.adapter.PagosDetalleAdapter
+import com.example.adminiums1.utils.PaymentUtils
 import com.example.adminiums1.utils.PdfGenerator
+import com.example.adminiums1.utils.formatearPeso
+import com.example.adminiums1.utils.mostrar
+import com.example.adminiums1.utils.ocultar
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +47,9 @@ class PagarCuotaActivity : AppCompatActivity() {
     private var buildingName = ""
     private var residentName = ""
     private var unit = ""
-    private var amount = 0.0
+    private var amountBase = 0.0
+    private var amountRecargo = 0.0
+    private var amountTotal = 0.0
     private var selectedMethod = ""
     
     private var bankDetails = ""
@@ -62,8 +68,8 @@ class PagarCuotaActivity : AppCompatActivity() {
         binding.rvUltimosPagos.layoutManager = LinearLayoutManager(this)
         binding.rvUltimosPagos.adapter = adapterHistorial
 
-        binding.btnBackResumen.setOnClickListener { finish() }
-        binding.btnBackPaso2.setOnClickListener { binding.viewFlipper.displayedChild = 0 }
+        binding.toolbarPaso1.setNavigationOnClickListener { finish() }
+        binding.toolbarPaso2.setNavigationOnClickListener { binding.viewFlipper.displayedChild = 0 }
         
         binding.btnIrAPaso2.setOnClickListener { binding.viewFlipper.displayedChild = 1 }
 
@@ -106,25 +112,25 @@ class PagarCuotaActivity : AppCompatActivity() {
         selectedMethod = method
         resetMethodStyles()
         
-        binding.layoutFormOxxo.visibility = View.GONE
-        binding.layoutFormTransfer.visibility = View.GONE
-        binding.layoutFormCard.visibility = View.GONE
-        binding.btnConfirmarPago.visibility = View.VISIBLE
+        binding.layoutFormOxxo.ocultar()
+        binding.layoutFormTransfer.ocultar()
+        binding.layoutFormCard.ocultar()
+        binding.btnConfirmarPago.mostrar()
 
         when(method) {
             "OXXO" -> {
                 binding.methodOxxo.strokeWidth = 4
-                binding.layoutFormOxxo.visibility = View.VISIBLE
+                binding.layoutFormOxxo.mostrar()
                 generarReferenciaOxxo()
             }
             "Transferencia" -> {
                 binding.methodTransfer.strokeWidth = 4
-                binding.layoutFormTransfer.visibility = View.VISIBLE
+                binding.layoutFormTransfer.mostrar()
                 binding.tvTransferDetails.text = bankDetails.ifEmpty { "Consulta los datos con tu administrador" }
             }
             "Tarjeta" -> {
                 binding.methodCard.strokeWidth = 4
-                binding.layoutFormCard.visibility = View.VISIBLE
+                binding.layoutFormCard.mostrar()
             }
             "Efectivo" -> {
                 binding.methodCash.strokeWidth = 4
@@ -141,7 +147,7 @@ class PagarCuotaActivity : AppCompatActivity() {
 
     private fun generarReferenciaOxxo() {
         val uid = repo.getCurrentUid() ?: ""
-        val ref = "2706" + buildingId.take(4).padEnd(4, '0') + uid.take(4) + amount.toLong().toString().padStart(6, '0')
+        val ref = "2706" + buildingId.take(4).padEnd(4, '0') + uid.take(4) + amountTotal.toLong().toString().padStart(6, '0')
         binding.tvOxxoRef.text = ref.chunked(4).joinToString(" ")
         
         try {
@@ -162,19 +168,37 @@ class PagarCuotaActivity : AppCompatActivity() {
                 user?.let {
                     residentName = it.nombre
                     unit = it.unidad
-                    amount = it.proximoPago
                     buildingId = it.edificioId
+                    
+                    amountBase = it.proximoPago
+                    amountRecargo = PaymentUtils.calcularRecargo(amountBase, it.fechaVencimiento)
+                    amountTotal = amountBase + amountRecargo
+
                     binding.tvResumenNombre.text = it.nombre
                     binding.tvResumenUnidadEdificio.text = "${it.unidad} • ${build?.nombre ?: ""}"
-                    binding.tvMontoGrande.text = "$ ${"%.2f".format(it.proximoPago)}"
-                    binding.tvBalanceActual.text = "Balance actual: $ ${"%.2f".format(it.balance)}"
                     
-                    if (it.balance < 0) {
-                        binding.chipVencimiento.text = "Adeudo pendiente"
-                        binding.chipVencimiento.setChipBackgroundColorResource(R.color.colorErrorBg)
+                    binding.tvMontoBase.text = amountBase.formatearPeso()
+                    if (amountRecargo > 0) {
+                        binding.tvRecargoEtiqueta.mostrar()
+                        binding.tvMontoRecargo.mostrar()
+                        binding.tvMontoRecargo.text = "+ ${amountRecargo.formatearPeso()}"
                     } else {
-                        binding.chipVencimiento.text = "Al corriente"
+                        binding.tvRecargoEtiqueta.ocultar()
+                        binding.tvMontoRecargo.ocultar()
+                    }
+                    
+                    binding.tvMontoGrande.text = amountTotal.formatearPeso()
+                    binding.tvBalanceActual.text = "Balance actual: ${it.balance.formatearPeso()}"
+                    
+                    val estado = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
+                    binding.chipVencimiento.text = estado
+                    
+                    if (it.balance < 0 || PaymentUtils.calcularDiasRestantes(it.fechaVencimiento) < 0) {
+                        binding.chipVencimiento.setChipBackgroundColorResource(R.color.colorErrorBg)
+                        binding.chipVencimiento.setTextColor(ContextCompat.getColor(this@PagarCuotaActivity, R.color.colorError))
+                    } else {
                         binding.chipVencimiento.setChipBackgroundColorResource(R.color.colorSuccessBg)
+                        binding.chipVencimiento.setTextColor(ContextCompat.getColor(this@PagarCuotaActivity, R.color.colorSuccess))
                     }
                 }
                 adapterHistorial.setDatos(logs)
@@ -192,7 +216,7 @@ class PagarCuotaActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
             .setTitle("Confirmar Registro")
-            .setMessage("¿Deseas registrar este pago por $ ${"%.2f".format(amount)} mediante $methodText?")
+            .setMessage("¿Deseas registrar este pago por ${amountTotal.formatearPeso()} mediante $methodText?")
             .setPositiveButton("Confirmar") { _, _ -> ejecutarRegistro() }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -200,7 +224,7 @@ class PagarCuotaActivity : AppCompatActivity() {
 
     private fun ejecutarRegistro() {
         val uid = repo.getCurrentUid() ?: return
-        binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.mostrar()
         
         CoroutineScope(Dispatchers.IO).launch {
             val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
@@ -212,20 +236,21 @@ class PagarCuotaActivity : AppCompatActivity() {
                 else -> ""
             }
 
+            val concepto = "Cuota mensual - " + SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date())
             val p = Pago(
                 residenteUid = uid,
                 edificioId = buildingId,
-                monto = amount,
+                monto = amountTotal,
                 metodoPago = selectedMethod,
                 referencia = reference,
                 fecha = fecha,
                 estado = status,
-                concepto = "Cuota mensual - " + SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date())
+                concepto = if (amountRecargo > 0) "$concepto (Incluye recargos)" else concepto
             )
 
             val ok = repo.registrarPago(p)
             withContext(Dispatchers.Main) {
-                binding.progressBar.visibility = View.GONE
+                binding.progressBar.ocultar()
                 if (ok) mostrarPaso3(p)
                 else Toast.makeText(this@PagarCuotaActivity, "Error al procesar", Toast.LENGTH_SHORT).show()
             }

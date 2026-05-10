@@ -31,11 +31,7 @@
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                android:layout_marginTop="8dp"
-                android:shadowColor="#40000000"
-                android:shadowDx="2"
-                android:shadowDy="2"
-                android:shadowRadius="4"/>
+                android:layout_marginTop="8dp" />
 
             <TextView
                 android:id="@+id/tvSubtitle"
@@ -47,90 +43,92 @@
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/white"
-            android:padding="24dp"
-            android:layout_marginTop="-20dp"
-            android:elevation="4dp">
+            android:layout_marginTop="-30dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/white">
 
-            <Button
-                android:id="@+id/btnCambiarRol"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="‹ Cambiar tipo de acceso"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="16dp"/>
-
-            <TextView
-                android:id="@+id/tvRolTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Acceso Universal"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorTextPrimary"
-                android:layout_marginBottom="24dp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Correo Electrónico"
-                android:layout_marginBottom="16dp"
-                style="@style/Widget.Adminiums.TextInputLayout">
+                android:orientation="vertical"
+                android:padding="32dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEmail"
+                <TextView
+                    android:id="@+id/tvRolTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bienvenido"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorTextPrimary"
+                    android:layout_marginBottom="32dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="Correo Electrónico"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Contraseña"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.Adminiums.TextInputLayout"
-                app:passwordToggleEnabled="true">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="Contraseña"
+                    android:layout_marginBottom="24dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:passwordToggleEnabled="true">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginBottom="8dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="INICIAR SESIÓN"
-                style="@style/Widget.Adminiums.Button.Primary"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvIrRegistro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="¿No tienes cuenta? Regístrate aquí"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="bold"
-                android:layout_marginTop="24dp"
-                android:padding="8dp"/>
-        </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="INICIAR SESIÓN"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tvIrRegistro"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="¿No tienes cuenta? Regístrate aquí"
+                    android:textAllCaps="false"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

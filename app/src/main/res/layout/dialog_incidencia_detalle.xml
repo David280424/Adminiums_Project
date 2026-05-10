@@ -40,6 +40,19 @@
         android:background="@color/colorSurfaceSecondary"
         android:padding="12dp"/>
 
+    <HorizontalScrollView
+        android:id="@+id/scrollFotos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone">
+        <LinearLayout
+            android:id="@+id/layoutFotosDetalle"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:orientation="horizontal"/>
+    </HorizontalScrollView>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -15,6 +16,22 @@ class FirebaseRepository {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
+
+    // ── Storage (Imágenes) ──────────────────────────────────────────────────
+
+    suspend fun subirImagen(path: String, imageBytes: ByteArray): String? = withContext(Dispatchers.IO) {
+        try {
+            val storageRef = storage.reference.child(path)
+            storageRef.putBytes(imageBytes).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (_: Exception) { null }
+    }
+
+    suspend fun subirImagenIncidencia(incidenciaId: String, imageBytes: ByteArray): String? {
+        val path = "incidencias/$incidenciaId/${UUID.randomUUID()}.jpg"
+        return subirImagen(path, imageBytes)
+    }
 
     // ── Autenticación & Edificios ───────────────────────────────────────────
 
@@ -290,6 +307,21 @@ class FirebaseRepository {
                 .toObjects(TareaLimpieza::class.java)
                 .sortedByDescending { it.timestamp }
         } catch (_: Exception) { emptyList() }
+    }
+
+    /** Listener en tiempo real para tareas de limpieza */
+    fun escucharTareasLimpieza(
+        edificioId: String,
+        onUpdate: (List<TareaLimpieza>) -> Unit
+    ): ListenerRegistration {
+        return db.collection("tareas_limpieza")
+            .whereEqualTo("edificioId", edificioId)
+            .addSnapshotListener { snapshot, _ ->
+                val lista = snapshot?.toObjects(TareaLimpieza::class.java)
+                    ?.sortedByDescending { it.timestamp }
+                    ?: emptyList()
+                onUpdate(lista)
+            }
     }
 
     suspend fun getTareasLimpiezaActivas(edificioId: String): List<TareaLimpieza> = withContext(Dispatchers.IO) {

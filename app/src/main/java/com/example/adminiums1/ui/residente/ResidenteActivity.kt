@@ -10,7 +10,10 @@ import androidx.core.content.ContextCompat
 import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ActivityResidenteBinding
 import com.example.adminiums1.model.Usuario
-import com.example.adminiums1.repository.FirebaseRepository
+import com.example.adminiums1.utils.PaymentUtils
+import com.example.adminiums1.utils.formatearPeso
+import com.example.adminiums1.utils.mostrar
+import com.example.adminiums1.utils.ocultar
 import com.example.adminiums1.ui.auth.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,14 +73,8 @@ class ResidenteActivity : AppCompatActivity() {
     }
 
     private fun solicitarLimpieza() {
-        AlertDialog.Builder(this)
-            .setTitle("Requerir Limpieza")
-            .setMessage("¿Deseas solicitar limpieza para tu unidad o un área común?")
-            .setPositiveButton("Confirmar") { _, _ ->
-                Toast.makeText(this, "Solicitud enviada", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        val intent = Intent(this, com.example.adminiums1.ui.limpieza.SolicitarLimpiezaActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onResume() {
@@ -93,18 +90,22 @@ class ResidenteActivity : AppCompatActivity() {
             usuario?.let {
                 binding.tvBienvenido.text = "Hola, ${it.nombre}"
                 binding.tvUnidad.text = "Unidad ${it.unidad}"
-                binding.tvBalance.text = "$ ${"%.2f".format(it.balance)}"
+                binding.tvBalance.text = it.balance.formatearPeso()
                 
-                binding.tvBalanceAcumulado.text = "$ ${"%.2f".format(it.balance)}"
-                binding.tvCuotaMensual.text = "$ ${"%.2f".format(it.proximoPago)}"
-                binding.tvProximoPago.text = "$ ${"%.2f".format(it.proximoPago)} pendiente"
+                binding.tvBalanceAcumulado.text = it.balance.formatearPeso()
+                binding.tvCuotaMensual.text = it.proximoPago.formatearPeso()
                 
-                if (it.balance < 0) {
-                    binding.tvFechaVencimiento.visibility = View.VISIBLE
-                    binding.tvFechaVencimiento.text = "Vence: ${it.fechaVencimiento.ifEmpty { "Fin de mes" }}"
+                val dias = PaymentUtils.calcularDiasRestantes(it.fechaVencimiento)
+                val totalAPagar = it.proximoPago + PaymentUtils.calcularRecargo(it.proximoPago, it.fechaVencimiento)
+                binding.tvProximoPago.text = "${totalAPagar.formatearPeso()} pendiente"
+                
+                if (it.balance < 0 || dias < 0) {
+                    binding.tvFechaVencimiento.mostrar()
+                    binding.tvFechaVencimiento.text = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
                     binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorRed))
                 } else {
-                    binding.tvFechaVencimiento.visibility = View.GONE
+                    binding.tvFechaVencimiento.mostrar()
+                    binding.tvFechaVencimiento.text = "Al corriente"
                     binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorGreen))
                 }
             }

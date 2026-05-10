@@ -11,39 +11,54 @@
         android:layout_height="match_parent">
 
         <!-- PASO 1: RESUMEN -->
-        <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_header_residente"
-                android:orientation="vertical"
-                android:padding="20dp">
-                <ImageButton
-                    android:id="@+id/btnBackResumen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_revert"
-                    app:tint="@color/white"
-                    android:contentDescription="Regresar"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Mi Cuota"
-                    android:textColor="@color/white"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    app:contentScrim="@color/colorResidente"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                    app:titleEnabled="false">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_header_residente"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingTop="40dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mi Cuota"
+                            android:textColor="@color/white"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbarPaso1"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_collapseMode="pin"
+                        app:navigationIcon="@android:drawable/ic_menu_revert"
+                        app:navigationIconTint="@color/white" />
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -57,6 +72,7 @@
                         android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
+
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -98,8 +114,48 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Monto a pagar"
+                                android:text="Monto base"
                                 android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvMontoBase"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="$0.00"
+                                android:textColor="@color/colorTextSecondary"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecargoEtiqueta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Recargos por atraso"
+                                android:textColor="@color/colorError"
+                                android:textSize="12sp"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tvMontoRecargo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+$0.00"
+                                android:textColor="@color/colorError"
+                                android:textSize="18sp"
+                                android:visibility="gone" />
+
+                            <View
+                                android:layout_width="100dp"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="8dp"
+                                android:background="@color/colorBorderTertiary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total a pagar"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tvMontoGrande"
@@ -154,55 +210,47 @@
                 android:id="@+id/btnIrAPaso2"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:layout_gravity="bottom"
                 android:layout_margin="16dp"
                 android:text="PROCEDER AL PAGO"
                 android:textStyle="bold"
                 app:cornerRadius="12dp" />
-        </LinearLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
         <!-- PASO 2: FORMULARIO -->
-        <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/btnBackPaso2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Regresar"
-                    android:src="@android:drawable/ic_menu_revert"
-                    app:tint="@color/colorTextPrimary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="¿Cómo deseas pagar?"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbarPaso2"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/colorResidente"
+                    app:navigationIcon="@android:drawable/ic_menu_revert"
+                    app:navigationIconTint="@color/white"
+                    app:title="¿Cómo deseas pagar?"
+                    app:titleTextColor="@color/white" />
+            </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="24dp">
+                    android:padding="16dp">
 
                     <com.google.android.material.card.MaterialCardView
+
                         android:id="@+id/methodOxxo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -553,11 +601,14 @@
                 android:id="@+id/btnConfirmarPago"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="16dp"
                 android:text="CONFIRMAR PAGO"
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:cornerRadius="12dp" />
-        </LinearLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
         <!-- PASO 3: RECIBO -->
         <LinearLayout

@@ -39,7 +39,7 @@ class RegistroActivity : AppCompatActivity() {
             finish()
         }
         
-        binding.btnBack.setOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             finish()
         }
     }
