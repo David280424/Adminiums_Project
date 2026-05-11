@@ -46,16 +46,21 @@ class RegistroActivity : AppCompatActivity() {
 
     private fun cargarCondominios() {
         CoroutineScope(Dispatchers.IO).launch {
-            val condominios = repo.getCondominios()
+            val result = repo.getCondominios()
             withContext(Dispatchers.Main) {
-                listaCondominios = condominios
-                // Para evitar nombres duplicados que confundan, mostramos "Nombre - Ciudad"
-                val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }
-                val adapter = ArrayAdapter(this@RegistroActivity, android.R.layout.simple_dropdown_item_1line, nombres)
-                binding.spinnerEdificios.setAdapter(adapter)
-                
-                binding.spinnerEdificios.setOnItemClickListener { _, _, position, _ ->
-                    edificioSeleccionadoId = listaCondominios[position].id
+                if (result.isSuccess) {
+                    val condominios = result.getOrDefault(emptyList())
+                    listaCondominios = condominios
+                    // Para evitar nombres duplicados que confundan, mostramos "Nombre - Ciudad"
+                    val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }
+                    val adapter = ArrayAdapter(this@RegistroActivity, android.R.layout.simple_dropdown_item_1line, nombres)
+                    binding.spinnerEdificios.setAdapter(adapter)
+
+                    binding.spinnerEdificios.setOnItemClickListener { _, _, position, _ ->
+                        edificioSeleccionadoId = listaCondominios[position].id
+                    }
+                } else {
+                    Toast.makeText(this@RegistroActivity, "Error al cargar edificios: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -103,13 +108,13 @@ class RegistroActivity : AppCompatActivity() {
                     val firestoreResult = repo.crearUsuario(nuevoUsuario)
                     binding.progressBar.visibility = View.GONE
                     
-                    if (firestoreResult) {
+                    if (firestoreResult.isSuccess) {
                         Toast.makeText(this@RegistroActivity, "Registro exitoso", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this@RegistroActivity, ResidenteActivity::class.java))
                         finishAffinity()
                     } else {
                         binding.btnRegistrar.isEnabled = true
-                        Toast.makeText(this@RegistroActivity, "Error al guardar datos", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@RegistroActivity, "Error al guardar datos: ${firestoreResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     binding.progressBar.visibility = View.GONE

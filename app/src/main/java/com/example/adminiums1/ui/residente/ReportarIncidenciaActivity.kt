@@ -160,7 +160,8 @@ class ReportarIncidenciaActivity : AppCompatActivity() {
         binding.btnEnviarReporte.isEnabled = false
 
         CoroutineScope(Dispatchers.IO).launch {
-            val user = repo.getUsuario(uid)
+            val userResult = repo.getUsuario(uid)
+            val user = userResult.getOrNull()
             val building = user?.edificioId?.let { repo.getCondominio(it) }
             val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
             

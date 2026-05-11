@@ -15,6 +15,7 @@ import com.example.adminiums1.utils.formatearPeso
 import com.example.adminiums1.utils.mostrar
 import com.example.adminiums1.utils.ocultar
 import com.example.adminiums1.ui.auth.LoginActivity
+import com.example.adminiums1.repository.FirebaseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -85,29 +86,34 @@ class ResidenteActivity : AppCompatActivity() {
     private fun cargarDatos() {
         val uid = repo.getCurrentUid() ?: return
         CoroutineScope(Dispatchers.Main).launch {
-            val usuario = repo.getUsuario(uid)
-            usuarioActual = usuario
-            usuario?.let {
-                binding.tvBienvenido.text = "Hola, ${it.nombre}"
-                binding.tvUnidad.text = "Unidad ${it.unidad}"
-                binding.tvBalance.text = it.balance.formatearPeso()
-                
-                binding.tvBalanceAcumulado.text = it.balance.formatearPeso()
-                binding.tvCuotaMensual.text = it.proximoPago.formatearPeso()
-                
-                val dias = PaymentUtils.calcularDiasRestantes(it.fechaVencimiento)
-                val totalAPagar = it.proximoPago + PaymentUtils.calcularRecargo(it.proximoPago, it.fechaVencimiento)
-                binding.tvProximoPago.text = "${totalAPagar.formatearPeso()} pendiente"
-                
-                if (it.balance < 0 || dias < 0) {
-                    binding.tvFechaVencimiento.mostrar()
-                    binding.tvFechaVencimiento.text = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
-                    binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorRed))
-                } else {
-                    binding.tvFechaVencimiento.mostrar()
-                    binding.tvFechaVencimiento.text = "Al corriente"
-                    binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorGreen))
+            val result = repo.getUsuario(uid)
+            if (result.isSuccess) {
+                val usuario = result.getOrNull()
+                usuarioActual = usuario
+                usuario?.let {
+                    binding.tvBienvenido.text = "Hola, ${it.nombre}"
+                    binding.tvUnidad.text = "Unidad ${it.unidad}"
+                    binding.tvBalance.text = it.balance.formatearPeso()
+
+                    binding.tvBalanceAcumulado.text = it.balance.formatearPeso()
+                    binding.tvCuotaMensual.text = it.proximoPago.formatearPeso()
+
+                    val dias = PaymentUtils.calcularDiasRestantes(it.fechaVencimiento)
+                    val totalAPagar = it.proximoPago + PaymentUtils.calcularRecargo(it.proximoPago, it.fechaVencimiento)
+                    binding.tvProximoPago.text = "${totalAPagar.formatearPeso()} pendiente"
+
+                    if (it.balance < 0 || dias < 0) {
+                        binding.tvFechaVencimiento.mostrar()
+                        binding.tvFechaVencimiento.text = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
+                        binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorRed))
+                    } else {
+                        binding.tvFechaVencimiento.mostrar()
+                        binding.tvFechaVencimiento.text = "Al corriente"
+                        binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorGreen))
+                    }
                 }
+            } else {
+                Toast.makeText(this@ResidenteActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

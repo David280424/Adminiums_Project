@@ -62,20 +62,22 @@ class EstadoCuentaActivity : AppCompatActivity() {
         binding.progressBar.mostrar()
 
         CoroutineScope(Dispatchers.IO).launch {
-            val user = repo.getUsuario(uid)
-            val pagos = repo.getHistorialPagosUsuario(uid)
+            val userResult = repo.getUsuario(uid)
+            val pagosResult = repo.getHistorialPagosUsuario(uid)
             
             withContext(Dispatchers.Main) {
                 binding.progressBar.ocultar()
+                val user = userResult.getOrNull()
+                val pagos = pagosResult.getOrDefault(emptyList())
                 usuarioCargado = user
                 listaPagos = pagos
-                
+
                 user?.let {
                     binding.tvResidenteNombre.text = it.nombre
                     binding.tvResidenteUnidadEdificio.text = "${it.unidad} - ${it.edificioId}"
                     binding.tvBalanceMonto.text = it.balance.formatearPeso()
                     binding.tvBalanceMonto.setTextColor(if (it.balance >= 0) ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorSuccess) else ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorError))
-                    
+
                     binding.tvProximaCuotaMonto.text = it.proximoPago.formatearPeso()
                     
                     val estado = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
@@ -88,7 +90,7 @@ class EstadoCuentaActivity : AppCompatActivity() {
                         binding.chipFechaVencimiento.setChipBackgroundColorResource(R.color.colorSuccessBg)
                         binding.chipFechaVencimiento.setTextColor(ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorSuccess))
                     }
-                    
+
                     val pagosAnio = pagos.filter { p -> p.fecha.contains(Calendar.getInstance().get(Calendar.YEAR).toString()) && p.estado == "Aprobado" }
                     binding.tvTotalAnualMonto.text = pagosAnio.sumOf { p -> p.monto }.formatearPeso()
                 }

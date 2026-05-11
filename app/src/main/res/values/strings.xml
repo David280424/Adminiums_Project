@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Adminiums</string>
+    <string name="sesion_no_encontrada">No se encontró sesión activa</string>
+    <string name="error_nombre_visitante">Ingresa el nombre del visitante</string>
+    <string name="autorizado_por">Autorizado por: %1$s</string>
+    <string name="unidad_info">Unidad: %1$s</string>
+    <string name="vigencia_hoy">Vigencia: Hoy %1$s</string>
+    <string name="compartir_mensaje">Acceso Adminiums para: %1$s\n\nMuestra este código al llegar.</string>
+    <string name="compartir_titulo">Compartir código</string>
+    <string name="visitante_qr">Visitante: %1$s</string>
+    <string name="qr_generado_exito">QR Generado con éxito</string>
+    <string name="default_residente">Residente</string>
+    <string name="default_na">N/A</string>
 </resources>

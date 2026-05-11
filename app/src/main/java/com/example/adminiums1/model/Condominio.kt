@@ -7,5 +7,6 @@ data class Condominio(
     val ciudad: String = "",
     val imagenUrl: String = "", // Para que la UI se vea pro
     val cuotaBase: Double = 0.0,
-    val totalUnidades: Int = 0
+    val totalUnidades: Int = 0,
+    val datosBancarios: String = "" // Ej: "Banco: BBVA\nCLABE: 0123 4567 8901 2345 67"
 )

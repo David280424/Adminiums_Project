@@ -51,6 +51,8 @@ class PagarCuotaActivity : AppCompatActivity() {
     private var amountRecargo = 0.0
     private var amountTotal = 0.0
     private var selectedMethod = ""
+    private var usuarioActual: com.example.adminiums1.model.Usuario? = null
+    private var ultimoPagoProcesado: Pago? = null
     
     private var bankDetails = ""
 
@@ -103,6 +105,13 @@ class PagarCuotaActivity : AppCompatActivity() {
 
         binding.btnConfirmarPago.setOnClickListener {
             confirmarYProcesar()
+        }
+
+        binding.btnShareRecibo.setOnClickListener {
+            usuarioActual?.let { user ->
+                val p = ultimoPagoProcesado ?: return@setOnClickListener
+                PdfGenerator.generarEstadoCuentaPDF(this, user, listOf(p))
+            }
         }
 
         binding.btnFinalizar.setOnClickListener { finish() }
@@ -160,15 +169,19 @@ class PagarCuotaActivity : AppCompatActivity() {
     private fun cargarDatos() {
         val uid = repo.getCurrentUid() ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            val user = repo.getUsuario(uid)
+            val userResult = repo.getUsuario(uid)
+            val user = userResult.getOrNull()
             val build = user?.edificioId?.let { repo.getCondominio(it) }
-            val logs = repo.getHistorialPagosUsuario(uid).take(3)
+            val pagosResult = repo.getHistorialPagosUsuario(uid)
+            val logs = pagosResult.getOrDefault(emptyList()).take(3)
             
             withContext(Dispatchers.Main) {
+                usuarioActual = user
                 user?.let {
                     residentName = it.nombre
                     unit = it.unidad
                     buildingId = it.edificioId
+                    bankDetails = build?.datosBancarios ?: ""
                     
                     amountBase = it.proximoPago
                     amountRecargo = PaymentUtils.calcularRecargo(amountBase, it.fechaVencimiento)
@@ -251,8 +264,10 @@ class PagarCuotaActivity : AppCompatActivity() {
             val ok = repo.registrarPago(p)
             withContext(Dispatchers.Main) {
                 binding.progressBar.ocultar()
-                if (ok) mostrarPaso3(p)
-                else Toast.makeText(this@PagarCuotaActivity, "Error al procesar", Toast.LENGTH_SHORT).show()
+                if (ok) {
+                    ultimoPagoProcesado = p
+                    mostrarPaso3(p)
+                } else Toast.makeText(this@PagarCuotaActivity, "Error al procesar", Toast.LENGTH_SHORT).show()
             }
         }
     }

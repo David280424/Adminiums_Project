@@ -3,19 +3,20 @@ package com.example.adminiums1.ui.residente
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ActivityGenerarQrBinding
+import com.example.adminiums1.model.Usuario
+import com.example.adminiums1.model.Visitante
 import com.example.adminiums1.repository.FirebaseRepository
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.adminiums1.utils.ErrorHandler
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -25,9 +26,9 @@ class GenerarQRActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGenerarQrBinding
     private val repo = FirebaseRepository()
-    private val db = FirebaseFirestore.getInstance()
     private var qrGenerado: String = ""
     private var bmpQR: Bitmap? = null
+    private var usuarioActual: Usuario? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +40,7 @@ class GenerarQRActivity : AppCompatActivity() {
         // Validar sesión al inicio
         val uid = repo.getCurrentUid()
         if (uid == null) {
-            Toast.makeText(this, "No se encontró sesión activa", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.sesion_no_encontrada, Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -50,11 +51,11 @@ class GenerarQRActivity : AppCompatActivity() {
         binding.btnGenerarQR.setOnClickListener {
             val nombre = binding.etNombreVisitante.text.toString().trim()
             if (nombre.isEmpty()) {
-                binding.etNombreVisitante.error = "Ingresa el nombre del visitante"
+                binding.etNombreVisitante.error = getString(R.string.error_nombre_visitante)
                 return@setOnClickListener
             }
 
-            generarYGuardarQR(nombre, uid)
+            generarYGuardarQR(nombre)
         }
 
         binding.btnCompartir.setOnClickListener {
@@ -63,70 +64,74 @@ class GenerarQRActivity : AppCompatActivity() {
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "Acceso Adminiums para: $qrGenerado\n\nMuestra este código al llegar."
+                        getString(R.string.compartir_mensaje, qrGenerado)
                     )
                 }
-                startActivity(Intent.createChooser(shareIntent, "Compartir código"))
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.compartir_titulo)))
             }
         }
     }
 
     private fun cargarDatosUsuario(uid: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val usuario = repo.getUsuario(uid)
-                // Usamos Locale("es", "MX") directamente para compatibilidad o Locale.ROOT
-                val localeMX = Locale("es", "MX")
+        lifecycleScope.launch {
+            repo.getUsuario(uid).onSuccess { usuario ->
+                usuarioActual = usuario
+                val localeMX = Locale.forLanguageTag("es-MX")
                 val hoy = SimpleDateFormat("d MMM yyyy", localeMX).format(Date())
 
-                withContext(Dispatchers.Main) {
-                    usuario?.let {
-                        binding.tvAutorizadoPor.text = "Autorizado por: ${it.nombre}"
-                        binding.tvUnidadInfo.text = "Unidad: ${it.unidad}"
-                        binding.tvVigencia.text = "Vigencia: Hoy $hoy"
-                    }
+                usuario?.let {
+                    binding.tvAutorizadoPor.text = getString(R.string.autorizado_por, it.nombre.ifEmpty { getString(R.string.default_residente) })
+                    binding.tvUnidadInfo.text = getString(R.string.unidad_info, it.unidad.ifEmpty { getString(R.string.default_na) })
+                    binding.tvVigencia.text = getString(R.string.vigencia_hoy, hoy)
                 }
-            } catch (e: Exception) {
-                Log.e("QR_DEBUG", "Error cargando usuario: ${e.message}")
+            }.onFailure { e ->
+                ErrorHandler.mostrar(this@GenerarQRActivity, e, "cargarDatosUsuario")
             }
         }
     }
 
-    private fun generarYGuardarQR(nombre: String, uid: String) {
+    private fun generarYGuardarQR(nombre: String) {
+        val usuario = usuarioActual ?: run {
+            Toast.makeText(this, R.string.sesion_no_encontrada, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         binding.progressBar.visibility = View.VISIBLE
         binding.btnGenerarQR.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch {
             try {
-                val usuario = repo.getUsuario(uid)
-                val localeMX = Locale("es", "MX")
+                val localeMX = Locale.forLanguageTag("es-MX")
                 val hoy = SimpleDateFormat("d MMM yyyy", localeMX).format(Date())
                 val timestamp = System.currentTimeMillis()
 
+                val resDefault = getString(R.string.default_residente)
+                val naDefault = getString(R.string.default_na)
+
+                val nombreAutorizador = usuario.nombre.ifEmpty { resDefault }
+                val unidadAutorizador = usuario.unidad.ifEmpty { naDefault }
+
                 // Contenido del QR
-                val qrContent =
-                    "ADMINIUMS|$nombre|${usuario?.nombre ?: "Residente"}|${usuario?.unidad ?: "N/A"}|$hoy|$timestamp"
+                val qrContent = "ADMINIUMS|$nombre|$nombreAutorizador|$unidadAutorizador|$hoy|$timestamp"
 
-                // 1. GENERAR QR USANDO BARCODE ENCODER
-                val barcodeEncoder = BarcodeEncoder()
-                val bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 512, 512)
+                // 1. GENERAR QR (en Dispatchers.Default para no bloquear el hilo principal)
+                val bitmap = withContext(Dispatchers.Default) {
+                    val barcodeEncoder = BarcodeEncoder()
+                    barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 512, 512)
+                }
 
-                // 2. GUARDAR EN FIRESTORE
-                val docRef = db.collection("visitantes").document()
-                val visitante = hashMapOf(
-                    "id" to docRef.id,
-                    "nombre" to nombre,
-                    "autorizadoPor" to (usuario?.nombre ?: "Residente"),
-                    "unidad" to (usuario?.unidad ?: "N/A"),
-                    "vigencia" to hoy,
-                    "qrCode" to qrContent,
-                    "timestamp" to timestamp,
-                    "validado" to false
+                // 2. GUARDAR EN REPOSITORIO
+                val visitante = Visitante(
+                    nombre = nombre,
+                    autorizadoPor = nombreAutorizador,
+                    unidad = unidadAutorizador,
+                    vigencia = hoy,
+                    qrCode = qrContent,
+                    timestamp = timestamp,
+                    validado = false
                 )
-                docRef.set(visitante).await()
 
-                // 3. ACTUALIZAR UI
-                withContext(Dispatchers.Main) {
+                repo.crearVisitante(visitante).onSuccess {
                     binding.progressBar.visibility = View.GONE
                     binding.btnGenerarQR.isEnabled = true
 
@@ -136,30 +141,22 @@ class GenerarQRActivity : AppCompatActivity() {
                     binding.ivQR.setImageBitmap(bitmap)
                     binding.layoutQRResult.visibility = View.VISIBLE
 
-                    binding.tvVisitanteQR.text = "Visitante: $nombre"
-                    binding.tvAutorizadoQR.text =
-                        "Autorizado por: ${usuario?.nombre ?: "Residente"}"
-                    binding.tvUnidadQR.text = "Unidad: ${usuario?.unidad ?: "N/A"}"
-                    binding.tvVigenciaQR.text = "Vigencia: Hoy $hoy"
+                    binding.tvVisitanteQR.text = getString(R.string.visitante_qr, nombre)
+                    binding.tvAutorizadoQR.text = getString(R.string.autorizado_por, nombreAutorizador)
+                    binding.tvUnidadQR.text = getString(R.string.unidad_info, unidadAutorizador)
+                    binding.tvVigenciaQR.text = getString(R.string.vigencia_hoy, hoy)
 
-                    Toast.makeText(
-                        this@GenerarQRActivity,
-                        "QR Generado con éxito",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@GenerarQRActivity, R.string.qr_generado_exito, Toast.LENGTH_SHORT).show()
+                }.onFailure { e ->
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnGenerarQR.isEnabled = true
+                    ErrorHandler.mostrar(this@GenerarQRActivity, e, "guardarVisitante")
                 }
 
             } catch (e: Exception) {
-                Log.e("QR_DEBUG", "Error: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnGenerarQR.isEnabled = true
-                    Toast.makeText(
-                        this@GenerarQRActivity,
-                        "Error al generar: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                binding.progressBar.visibility = View.GONE
+                binding.btnGenerarQR.isEnabled = true
+                ErrorHandler.mostrar(this@GenerarQRActivity, e, "generarBitmapQR")
             }
         }
     }

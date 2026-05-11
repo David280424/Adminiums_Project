@@ -17,6 +17,7 @@ import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.auth.LoginActivity
 import com.example.adminiums1.ui.auth.RegistroActivity
 import com.example.adminiums1.ui.limpieza.LimpiezaActivity
+import com.example.adminiums1.utils.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class AdminActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        binding.tvEdificioActual.setOnClickListener { seleccionarEdificioDialog() }
+        binding.tvEdificioActual.setOnClickListener { mostrarMenuEdificio() }
 
         binding.btnVerVigilantes.setOnClickListener {
             val intent = Intent(this, VigilantesAdminActivity::class.java)
@@ -95,6 +96,10 @@ class AdminActivity : AppCompatActivity() {
         }
         binding.statLimpieza.setOnClickListener { abrirGestionLimpieza() }
 
+        binding.btnNotificarDeudores.setOnClickListener {
+            notificarTodosDeudores()
+        }
+
         binding.btnLogout.setOnClickListener {
             repo.logout()
             startActivity(Intent(this, LoginActivity::class.java))
@@ -114,25 +119,46 @@ class AdminActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun mostrarMenuEdificio() {
+        val opciones = arrayOf("Cambiar Edificio", "Configuración del Edificio")
+        AlertDialog.Builder(this)
+            .setTitle(binding.tvEdificioActual.text)
+            .setItems(opciones) { _, which ->
+                when (which) {
+                    0 -> seleccionarEdificioDialog()
+                    1 -> {
+                        val intent = Intent(this, ConfiguracionEdificioActivity::class.java)
+                        intent.putExtra("edificioId", edificioIdActual)
+                        startActivity(intent)
+                    }
+                }
+            }.show()
+    }
+
     private fun seleccionarEdificioDialog() {
         CoroutineScope(Dispatchers.IO).launch {
-            val condominios = repo.getCondominios()
+            val result = repo.getCondominios()
             withContext(Dispatchers.Main) {
-                if (condominios.isEmpty()) {
-                    Toast.makeText(this@AdminActivity, "No hay condominios registrados", Toast.LENGTH_LONG).show()
-                    return@withContext
-                }
-                val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }.toTypedArray()
-                AlertDialog.Builder(this@AdminActivity)
-                    .setTitle("🏢 Seleccionar Edificio")
-                    .setItems(nombres) { _, which ->
-                        val sel = condominios[which]
-                        edificioIdActual = sel.id
-                        binding.tvEdificioActual.text = sel.nombre
-                        cargarDashboard()
+                if (result.isSuccess) {
+                    val condominios = result.getOrDefault(emptyList())
+                    if (condominios.isEmpty()) {
+                        Toast.makeText(this@AdminActivity, "No hay condominios registrados", Toast.LENGTH_LONG).show()
+                        return@withContext
                     }
-                    .setCancelable(false)
-                    .show()
+                    val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }.toTypedArray()
+                    AlertDialog.Builder(this@AdminActivity)
+                        .setTitle("🏢 Seleccionar Edificio")
+                        .setItems(nombres) { _, which ->
+                            val sel = condominios[which]
+                            edificioIdActual = sel.id
+                            binding.tvEdificioActual.text = sel.nombre
+                            cargarDashboard()
+                        }
+                        .setCancelable(false)
+                        .show()
+                } else {
+                    Toast.makeText(this@AdminActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -141,11 +167,17 @@ class AdminActivity : AppCompatActivity() {
         if (edificioIdActual.isEmpty()) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val residentes = repo.getResidentesPorEdificio(edificioIdActual)
+                val resultResidentes = repo.getResidentesPorEdificio(edificioIdActual)
+                val residentes = resultResidentes.getOrDefault(emptyList())
+                
                 val incidenciasPend = repo.getIncidenciasPorEstado(edificioIdActual, "Pendiente")
                 val tareasActivas = repo.getTareasLimpiezaActivas(edificioIdActual)
                 
                 withContext(Dispatchers.Main) {
+                    if (resultResidentes.isFailure) {
+                        ErrorHandler.mostrar(this@AdminActivity, resultResidentes.exceptionOrNull()!!, "cargarDashboard")
+                    }
+
                     listaResidentes = residentes
                     adapter.setDatos(residentes)
                     
@@ -169,14 +201,14 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun mostrarOpcionesResidente(u: Usuario) {
-        val opciones = arrayOf("Ver Estado de Cuenta", "➕ Registrar Pago", "Historial de Pagos", "Eliminar")
+        val opciones = arrayOf("Ver Estado de Cuenta", "➕ Registrar Pago", "Historial de Pagos", "🔔 Enviar Recordatorio", "Eliminar")
         AlertDialog.Builder(this)
             .setTitle(u.nombre)
             .setItems(opciones) { _, which ->
                 when (which) {
                     0 -> {
-                        val intent = Intent(this, ResidenteDetalleActivity::class.java)
-                        intent.putExtra("extra_uid", u.uid)
+                        val intent = Intent(this, com.example.adminiums1.ui.residente.EstadoCuentaActivity::class.java)
+                        intent.putExtra("uid_residente", u.uid)
                         startActivity(intent)
                     }
                     1 -> mostrarDialogRecarga(u)
@@ -186,9 +218,38 @@ class AdminActivity : AppCompatActivity() {
                         intent.putExtra("nombre", u.nombre)
                         startActivity(intent)
                     }
-                    3 -> confirmarEliminar(u)
+                    3 -> enviarRecordatorio(u)
+                    4 -> confirmarEliminar(u)
                 }
             }.show()
+    }
+
+    private fun enviarRecordatorio(u: Usuario) {
+        val balanceStr = "%.2f".format(abs(u.balance))
+        val msj = "Hola ${u.nombre}, te recordamos que tienes un adeudo pendiente de $ $balanceStr en tu cuenta de Adminiums. Por favor, realiza tu pago a la brevedad."
+        
+        AlertDialog.Builder(this)
+            .setTitle("Enviar Recordatorio")
+            .setMessage("Se enviará una notificación a ${u.nombre} sobre su adeudo de $ $balanceStr.")
+            .setPositiveButton("Enviar") { _, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    val exito = repo.solicitarNotificacionDeuda(u, msj)
+                    withContext(Dispatchers.Main) {
+                        if (exito) {
+                            Toast.makeText(this@AdminActivity, "Recordatorio enviado a ${u.nombre}", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Fallback if FCM token is missing
+                            val mockIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, msj)
+                            }
+                            startActivity(Intent.createChooser(mockIntent, "Compartir vía..."))
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun confirmarEliminar(u: Usuario) {
@@ -213,11 +274,13 @@ class AdminActivity : AppCompatActivity() {
                 val monto = input.text.toString().toDoubleOrNull() ?: 0.0
                 if (monto > 0) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val exito = repo.crearUsuario(u.copy(balance = u.balance + monto))
+                        val result = repo.crearUsuario(u.copy(balance = u.balance + monto))
                         withContext(Dispatchers.Main) {
-                            if (exito) {
+                            if (result.isSuccess) {
                                 cargarDashboard()
                                 Toast.makeText(this@AdminActivity, "Saldo actualizado", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this@AdminActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -233,5 +296,34 @@ class AdminActivity : AppCompatActivity() {
         if (binding.chipDeudores.isChecked) filtrada = filtrada.filter { it.balance < 0 }
         else if (binding.chipAlCorriente.isChecked) filtrada = filtrada.filter { it.balance >= 0 }
         adapter.setDatos(filtrada)
+    }
+
+    private fun notificarTodosDeudores() {
+        val deudores = listaResidentes.filter { it.balance < 0 }
+        if (deudores.isEmpty()) {
+            Toast.makeText(this, "No hay deudores para notificar", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Notificar a Todos")
+            .setMessage("¿Deseas enviar un recordatorio automático a los ${deudores.size} residentes con adeudos?")
+            .setPositiveButton("Enviar Todo") { _, _ ->
+                var enviados = 0
+                CoroutineScope(Dispatchers.IO).launch {
+                    deudores.forEach { u ->
+                        val balanceStr = "%.2f".format(abs(u.balance))
+                        val msj = "Hola ${u.nombre}, recordatorio de pago pendiente: $ $balanceStr."
+                        if (repo.solicitarNotificacionDeuda(u, msj)) {
+                            enviados++
+                        }
+                    }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@AdminActivity, "Se solicitaron $enviados notificaciones", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 }

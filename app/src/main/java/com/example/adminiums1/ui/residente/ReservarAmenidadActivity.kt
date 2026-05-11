@@ -154,7 +154,8 @@ class ReservarAmenidadActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val usuario = repo.getUsuario(uid)
+                val result = repo.getUsuario(uid)
+                val usuario = result.getOrNull()
                 val reservacion = Reservacion(
                     amenidad        = amenidadSeleccionada,
                     residenteUid    = uid,

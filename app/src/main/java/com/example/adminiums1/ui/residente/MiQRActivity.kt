@@ -36,20 +36,25 @@ class MiQRActivity : AppCompatActivity() {
         binding.ivQRResidente.ocultar()
 
         CoroutineScope(Dispatchers.Main).launch {
-            val usuario = repo.getUsuario(uid)
-            usuario?.let {
-                // QR fijo con datos del residente — el vigilante lo escanea para registrar entrada
-                val contenido = "RESIDENTE|${it.uid}|${it.nombre}|${it.unidad}"
+            val result = repo.getUsuario(uid)
+            if (result.isSuccess) {
+                val usuario = result.getOrNull()
+                usuario?.let {
+                    // QR fijo con datos del residente — el vigilante lo escanea para registrar entrada
+                    val contenido = "RESIDENTE|${it.uid}|${it.nombre}|${it.unidad}"
 
-                val bmp: Bitmap = withContext(Dispatchers.Default) {
-                    QRUtils.generateQR(contenido, 600)
+                    val bmp: Bitmap = withContext(Dispatchers.Default) {
+                        QRUtils.generateQR(contenido, 600)
+                    }
+
+                    binding.progressBar.ocultar()
+                    binding.ivQRResidente.mostrar()
+                    binding.ivQRResidente.setImageBitmap(bmp)
+                    binding.tvNombreQR.text = it.nombre
+                    binding.tvUnidadQR.text = "Unidad: ${it.unidad}"
                 }
-
+            } else {
                 binding.progressBar.ocultar()
-                binding.ivQRResidente.mostrar()
-                binding.ivQRResidente.setImageBitmap(bmp)
-                binding.tvNombreQR.text   = it.nombre
-                binding.tvUnidadQR.text   = "Unidad: ${it.unidad}"
             }
         }
     }

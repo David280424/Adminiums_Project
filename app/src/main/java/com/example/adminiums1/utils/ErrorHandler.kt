@@ -17,7 +17,7 @@ object ErrorHandler {
     private const val TAG = "Adminiums"
 
     /** Devuelve un mensaje amigable en español según el tipo de error */
-    fun mensajeAmigable(error: Exception): String = when (error) {
+    fun mensajeAmigable(error: Throwable): String = when (error) {
 
         // ── Sin conexión ────────────────────────────────────────────────────
         is FirebaseNetworkException ->
@@ -59,14 +59,14 @@ object ErrorHandler {
     }
 
     /** Muestra el error como Toast y lo registra en Logcat */
-    fun mostrar(context: Context, error: Exception, origen: String = "") {
+    fun mostrar(context: Context, error: Throwable, origen: String = "") {
         val mensaje = mensajeAmigable(error)
         Log.e(TAG, "[$origen] ${error.javaClass.simpleName}: ${error.message}", error)
         Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
     }
 
     /** Solo registra en Logcat, sin mostrar UI (para errores de listeners) */
-    fun log(error: Exception, origen: String = "") {
+    fun log(error: Throwable, origen: String = "") {
         Log.e(TAG, "[$origen] ${error.javaClass.simpleName}: ${error.message}", error)
     }
 }

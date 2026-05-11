@@ -51,7 +51,10 @@
                         android:text="Residencial Premium"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:drawableEnd="@drawable/ic_edit"
+                        android:drawablePadding="8dp"
+                        app:drawableTint="@color/white"/>
                 </LinearLayout>
 
                 <Button
@@ -285,6 +288,18 @@
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:text="Directorio de residentes"
                     android:textSize="13sp" android:textStyle="bold" android:textColor="@color/colorTextPrimary"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNotificarDeudores"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Notificar Deudores"
+                    android:textSize="10sp"
+                    android:textColor="@color/colorError"
+                    app:icon="@drawable/ic_notification"
+                    app:iconTint="@color/colorError"
+                    app:iconSize="14dp"/>
             </LinearLayout>
 
             <com.google.android.material.chip.ChipGroup

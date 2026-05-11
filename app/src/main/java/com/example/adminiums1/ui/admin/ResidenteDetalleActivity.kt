@@ -55,16 +55,17 @@ class ResidenteDetalleActivity : AppCompatActivity() {
 
     private fun cargarEstadoDeCuenta() {
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val usuario = repo.getUsuario(residenteId)
-                val pagos = repo.getHistorialPagosUsuario(residenteId)
+            val userResult = repo.getUsuario(residenteId)
+            val pagosResult = repo.getHistorialPagosUsuario(residenteId)
 
-                withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
+                if (userResult.isSuccess) {
+                    val usuario = userResult.getOrNull()
                     usuario?.let { u ->
                         binding.tvDetalleNombre.text = u.nombre
                         binding.tvDetalleUnidad.text = "Unidad: ${u.unidad}"
                         binding.tvDetalleBalance.text = "$ ${"%.2f".format(u.balance)}"
-                        
+
                         // Si el balance es negativo (deuda), ponemos color rojo
                         if (u.balance < 0) {
                             binding.tvDetalleBalance.setTextColor(0xFFE74C3C.toInt())
@@ -79,16 +80,19 @@ class ResidenteDetalleActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
                     }
+                } else {
+                    Toast.makeText(this@ResidenteDetalleActivity, "Error al cargar usuario: ${userResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                }
 
+                if (pagosResult.isSuccess) {
+                    val pagos = pagosResult.getOrDefault(emptyList())
                     // Cargar lista de movimientos en el adapter
                     (binding.rvPagos.adapter as PagosDetalleAdapter).setDatos(pagos)
-                    
+
                     if (pagos.isEmpty()) binding.tvSinPagos.mostrar()
                     else binding.tvSinPagos.ocultar()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    ErrorHandler.mostrar(this@ResidenteDetalleActivity, e, "cargarEstadoDeCuenta")
+                } else {
+                    Toast.makeText(this@ResidenteDetalleActivity, "Error al cargar pagos: ${pagosResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

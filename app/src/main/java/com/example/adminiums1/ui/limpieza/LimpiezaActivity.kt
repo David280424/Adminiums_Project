@@ -80,27 +80,31 @@ class LimpiezaActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
 
         CoroutineScope(Dispatchers.IO).launch {
-            usuarioActual = repo.getUsuario(uid)
+            val result = repo.getUsuario(uid)
             
-            if (usuarioActual?.rol == "residente") {
-                withContext(Dispatchers.Main) {
-                    startActivity(Intent(this@LimpiezaActivity, SolicitarLimpiezaActivity::class.java))
-                    finish()
-                }
-                return@launch
-            }
-
-            // Si no vino por intent, usamos el del usuario
-            if (edificioId.isEmpty()) {
-                edificioId = usuarioActual?.edificioId ?: ""
-            }
-
             withContext(Dispatchers.Main) {
-                if (edificioId.isNotEmpty()) {
-                    iniciarListener()
+                if (result.isSuccess) {
+                    usuarioActual = result.getOrNull()
+                    if (usuarioActual?.rol == "residente") {
+                        startActivity(Intent(this@LimpiezaActivity, SolicitarLimpiezaActivity::class.java))
+                        finish()
+                        return@withContext
+                    }
+
+                    // Si no vino por intent, usamos el del usuario
+                    if (edificioId.isEmpty()) {
+                        edificioId = usuarioActual?.edificioId ?: ""
+                    }
+
+                    if (edificioId.isNotEmpty()) {
+                        iniciarListener()
+                    } else {
+                        binding.progressBar.visibility = View.GONE
+                        Snackbar.make(binding.root, "No se encontró el edificio", Snackbar.LENGTH_LONG).show()
+                    }
                 } else {
                     binding.progressBar.visibility = View.GONE
-                    Snackbar.make(binding.root, "No se encontró el edificio", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.root, "Error: ${result.exceptionOrNull()?.message}", Snackbar.LENGTH_LONG).show()
                 }
             }
         }

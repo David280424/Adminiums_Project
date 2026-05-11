@@ -47,7 +47,10 @@ class SolicitarLimpiezaActivity : AppCompatActivity() {
     private fun cargarUsuario() {
         val uid = repo.getCurrentUid() ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            usuarioActual = repo.getUsuario(uid)
+            val result = repo.getUsuario(uid)
+            if (result.isSuccess) {
+                usuarioActual = result.getOrNull()
+            }
         }
     }
 

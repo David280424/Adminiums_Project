@@ -61,24 +61,30 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkUserRoleAndNavigate(uid: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val usuario = repo.getUsuario(uid)
+            val result = repo.getUsuario(uid)
             withContext(Dispatchers.Main) {
                 binding.progressBar.visibility = View.GONE
-                if (usuario != null) {
-                    val intent = when (usuario.rol) {
-                        "admin" -> Intent(this@LoginActivity, AdminActivity::class.java)
-                        "residente" -> Intent(this@LoginActivity, ResidenteActivity::class.java)
-                        "vigilante" -> Intent(this@LoginActivity, VigilanteActivity::class.java)
-                        "limpieza" -> Intent(this@LoginActivity, LimpiezaActivity::class.java)
-                        else -> {
-                            Toast.makeText(this@LoginActivity, "Rol no reconocido", Toast.LENGTH_SHORT).show()
-                            return@withContext
+                if (result.isSuccess) {
+                    val usuario = result.getOrNull()
+                    if (usuario != null) {
+                        val intent = when (usuario.rol) {
+                            "admin" -> Intent(this@LoginActivity, AdminActivity::class.java)
+                            "residente" -> Intent(this@LoginActivity, ResidenteActivity::class.java)
+                            "vigilante" -> Intent(this@LoginActivity, VigilanteActivity::class.java)
+                            "limpieza" -> Intent(this@LoginActivity, LimpiezaActivity::class.java)
+                            else -> {
+                                Toast.makeText(this@LoginActivity, "Rol no reconocido", Toast.LENGTH_SHORT).show()
+                                return@withContext
+                            }
                         }
+                        startActivity(intent)
+                        finishAffinity()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Perfil no encontrado", Toast.LENGTH_SHORT).show()
+                        binding.btnLogin.isEnabled = true
                     }
-                    startActivity(intent)
-                    finishAffinity()
                 } else {
-                    Toast.makeText(this@LoginActivity, "Error al obtener perfil", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                     binding.btnLogin.isEnabled = true
                 }
             }

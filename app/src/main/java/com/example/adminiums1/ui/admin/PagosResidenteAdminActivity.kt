@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.Toast
 import com.example.adminiums1.databinding.ActivityPagosResidenteAdminBinding
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.adapter.PagosDetalleAdapter
@@ -37,10 +38,15 @@ class PagosResidenteAdminActivity : AppCompatActivity() {
 
     private fun cargarPagos(uid: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val lista = repo.getHistorialPagosUsuario(uid)
+            val result = repo.getHistorialPagosUsuario(uid)
             withContext(Dispatchers.Main) {
-                adapter.setDatos(lista)
-                binding.layoutEmpty.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+                if (result.isSuccess) {
+                    val lista = result.getOrDefault(emptyList())
+                    adapter.setDatos(lista)
+                    binding.layoutEmpty.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    Toast.makeText(this@PagosResidenteAdminActivity, "Error: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

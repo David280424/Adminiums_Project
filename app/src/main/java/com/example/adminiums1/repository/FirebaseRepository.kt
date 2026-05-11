@@ -52,12 +52,13 @@ class FirebaseRepository {
     fun logout() = auth.signOut()
     fun getCurrentUid(): String? = auth.currentUser?.uid
 
-    suspend fun getCondominios(): List<Condominio> = withContext(Dispatchers.IO) {
+    suspend fun getCondominios(): Result<List<Condominio>> = withContext(Dispatchers.IO) {
         try {
-            db.collection("condominios").get().await()
+            val list = db.collection("condominios").get().await()
                 .toObjects(Condominio::class.java)
                 .sortedBy { it.nombre }
-        } catch (_: Exception) { emptyList() }
+            Result.success(list)
+        } catch (e: Exception) { Result.failure(e) }
     }
 
     suspend fun getCondominio(id: String): Condominio? = withContext(Dispatchers.IO) {
@@ -68,17 +69,18 @@ class FirebaseRepository {
 
     // ── Usuarios & Residentes ───────────────────────────────────────────────
 
-    suspend fun getUsuario(uid: String): Usuario? = withContext(Dispatchers.IO) {
+    suspend fun getUsuario(uid: String): Result<Usuario?> = withContext(Dispatchers.IO) {
         try {
-            db.collection("usuarios").document(uid).get().await().toObject(Usuario::class.java)
-        } catch (_: Exception) { null }
+            val user = db.collection("usuarios").document(uid).get().await().toObject(Usuario::class.java)
+            Result.success(user)
+        } catch (e: Exception) { Result.failure(e) }
     }
 
-    suspend fun crearUsuario(usuario: Usuario): Boolean = withContext(Dispatchers.IO) {
+    suspend fun crearUsuario(usuario: Usuario): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             db.collection("usuarios").document(usuario.uid).set(usuario).await()
-            true
-        } catch (_: Exception) { false }
+            Result.success(Unit)
+        } catch (e: Exception) { Result.failure(e) }
     }
 
     suspend fun eliminarUsuario(uid: String): Boolean = withContext(Dispatchers.IO) {
@@ -88,29 +90,56 @@ class FirebaseRepository {
         } catch (_: Exception) { false }
     }
 
-    suspend fun getTodosUsuarios(): List<Usuario> = withContext(Dispatchers.IO) {
+    suspend fun getTodosUsuarios(): Result<List<Usuario>> = withContext(Dispatchers.IO) {
         try {
-            db.collection("usuarios").get().await()
-                .toObjects(Usuario::class.java)
-                .sortedBy { it.nombre }
-        } catch (_: Exception) { emptyList() }
+            val snapshot = db.collection("usuarios").get().await()
+            val usuarios = snapshot.toObjects(Usuario::class.java).sortedBy { it.nombre }
+            Result.success(usuarios)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun getResidentesPorEdificio(edificioId: String): List<Usuario> = withContext(Dispatchers.IO) {
+    suspend fun getResidentesPorEdificio(edificioId: String): Result<List<Usuario>> = withContext(Dispatchers.IO) {
         try {
-            db.collection("usuarios")
+            val snapshot = db.collection("usuarios")
                 .whereEqualTo("edificioId", edificioId)
                 .whereEqualTo("rol", "residente")
                 .get().await()
-                .toObjects(Usuario::class.java)
-                .sortedBy { it.nombre }
-        } catch (_: Exception) { emptyList() }
+            val residentes = snapshot.toObjects(Usuario::class.java).sortedBy { it.nombre }
+            Result.success(residentes)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun setUserOnlineStatus(uid: String, isOnline: Boolean): Unit = withContext(Dispatchers.IO) {
         try {
             db.collection("usuarios").document(uid).update("isOnline", isOnline).await()
         } catch (_: Exception) { }
+    }
+
+    suspend fun updateFcmToken(uid: String, token: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            db.collection("usuarios").document(uid).update("fcmToken", token).await()
+            true
+        } catch (_: Exception) { false }
+    }
+
+    suspend fun solicitarNotificacionDeuda(usuario: Usuario, mensaje: String): Boolean = withContext(Dispatchers.IO) {
+        if (usuario.fcmToken.isEmpty()) return@withContext false
+        try {
+            val data = mapOf(
+                "token" to usuario.fcmToken,
+                "titulo" to "Recordatorio de Pago",
+                "mensaje" to mensaje,
+                "residenteUid" to usuario.uid,
+                "timestamp" to System.currentTimeMillis(),
+                "procesado" to false
+            )
+            db.collection("notificaciones_pendientes").add(data).await()
+            true
+        } catch (_: Exception) { false }
     }
 
     /** Listener en tiempo real para la lista de residentes de un edificio */
@@ -133,7 +162,7 @@ class FirebaseRepository {
 
     suspend fun registrarPago(pago: Pago): Boolean = withContext(Dispatchers.IO) {
         try {
-            val user = getUsuario(pago.residenteUid)
+            val user = getUsuario(pago.residenteUid).getOrNull()
             val building = getCondominio(pago.edificioId)
 
             val docRef = db.collection("pagos").document()
@@ -152,21 +181,22 @@ class FirebaseRepository {
 
             if (finalPago.estado == "Aprobado") {
                 db.collection("usuarios").document(pago.residenteUid)
-                    .update("balance", com.google.firebase.firestore.FieldValue.increment(-pago.monto))
+                    .update("balance", com.google.firebase.firestore.FieldValue.increment(pago.monto))
                     .await()
             }
             true
         } catch (_: Exception) { false }
     }
 
-    suspend fun getHistorialPagosUsuario(uid: String): List<Pago> = withContext(Dispatchers.IO) {
+    suspend fun getHistorialPagosUsuario(uid: String): Result<List<Pago>> = withContext(Dispatchers.IO) {
         try {
-            db.collection("pagos")
+            val list = db.collection("pagos")
                 .whereEqualTo("residenteUid", uid)
                 .get().await()
                 .toObjects(Pago::class.java)
                 .sortedByDescending { it.timestamp }
-        } catch (_: Exception) { emptyList() }
+            Result.success(list)
+        } catch (e: Exception) { Result.failure(e) }
     }
 
     /** Listener en tiempo real para historial de pagos de un residente */
@@ -385,14 +415,37 @@ class FirebaseRepository {
 
     // ── Accesos ─────────────────────────────────────────────────────────────
 
-    suspend fun registrarAcceso(acceso: RegistroAcceso): Boolean = withContext(Dispatchers.IO) {
+    suspend fun registrarAcceso(acceso: RegistroAcceso): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             db.collection("accesos").add(acceso).await()
-            true
-        } catch (_: Exception) { false }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun validarVisitante(qrCode: String): Visitante? = withContext(Dispatchers.IO) {
+    suspend fun crearVisitante(visitante: Visitante): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val docRef = if (visitante.id.isEmpty()) {
+                db.collection("visitantes").document()
+            } else {
+                db.collection("visitantes").document(visitante.id)
+            }
+            
+            val finalVisitante = if (visitante.id.isEmpty()) {
+                visitante.copy(id = docRef.id)
+            } else {
+                visitante
+            }
+
+            docRef.set(finalVisitante).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun validarVisitante(qrCode: String): Result<Visitante?> = withContext(Dispatchers.IO) {
         try {
             val snapshot = db.collection("visitantes")
                 .whereEqualTo("qrCode", qrCode)
@@ -403,19 +456,26 @@ class FirebaseRepository {
             if (doc != null) {
                 val visitante = doc.toObject(Visitante::class.java)
                 doc.reference.update("validado", true).await()
-                visitante
-            } else null
-        } catch (_: Exception) { null }
+                Result.success(visitante)
+            } else {
+                Result.success(null)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun getAccesosPorFecha(fecha: String): List<RegistroAcceso> = withContext(Dispatchers.IO) {
+    suspend fun getAccesosPorFecha(fecha: String): Result<List<RegistroAcceso>> = withContext(Dispatchers.IO) {
         try {
-            db.collection("accesos")
+            val snapshot = db.collection("accesos")
                 .whereEqualTo("fecha", fecha)
                 .get().await()
-                .toObjects(RegistroAcceso::class.java)
+            val accesos = snapshot.toObjects(RegistroAcceso::class.java)
                 .sortedByDescending { it.timestamp }
-        } catch (_: Exception) { emptyList() }
+            Result.success(accesos)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     /** Listener en tiempo real para historial de entradas filtrado por fecha */
@@ -470,5 +530,16 @@ class FirebaseRepository {
                     ?: emptyList()
                 onUpdate(lista)
             }
+    }
+
+    suspend fun actualizarCondominio(condominio: Condominio): Boolean {
+        return try {
+            db.collection("condominios").document(condominio.id)
+                .set(condominio)
+                .await()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

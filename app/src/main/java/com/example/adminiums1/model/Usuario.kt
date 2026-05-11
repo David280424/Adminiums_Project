@@ -11,5 +11,6 @@ data class Usuario(
     val proximoPago: Double = 0.0,
     val fechaVencimiento: String = "",
     val isOnline: Boolean = false,
-    val phone: String = ""
+    val phone: String = "",
+    val fcmToken: String = ""
 )
