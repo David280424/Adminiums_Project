@@ -10,7 +10,7 @@ import com.example.adminiums1.model.RegistroAcceso
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.model.Visitante
 import com.example.adminiums1.repository.FirebaseRepository
-import com.example.adminiums1.ui.auth.RolSelectorActivity
+import com.example.adminiums1.ui.auth.LoginActivity
 import com.example.adminiums1.ui.vigilante.adapter.AccesosAdapter
 import com.example.adminiums1.utils.ErrorHandler
 import com.example.adminiums1.utils.mostrar
@@ -51,10 +51,13 @@ class VigilanteActivity : AppCompatActivity() {
         configurarHistorial()
         cargarHistorialHoy()
 
+        // ACTUALIZADO: Ahora redirige al Login actualizado
         binding.btnLogout.setOnClickListener {
             repo.logout()
-            startActivity(Intent(this, RolSelectorActivity::class.java))
-            finishAffinity()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
     }
 

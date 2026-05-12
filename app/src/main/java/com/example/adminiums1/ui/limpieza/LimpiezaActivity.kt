@@ -12,6 +12,7 @@ import com.example.adminiums1.databinding.DialogTareaLimpiezaBinding
 import com.example.adminiums1.model.TareaLimpieza
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.repository.FirebaseRepository
+import com.example.adminiums1.ui.auth.LoginActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +38,6 @@ class LimpiezaActivity : AppCompatActivity() {
         binding = ActivityLimpiezaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Prioridad al edificioId del intent (para admins)
         edificioId = intent.getStringExtra("edificioId") ?: ""
 
         setupRecyclerView()
@@ -46,6 +46,15 @@ class LimpiezaActivity : AppCompatActivity() {
 
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.fabNuevaTarea.setOnClickListener { mostrarDialogoSolicitud() }
+        
+        // BOTÓN PARA SALIR DEL BUCLE
+        binding.btnLogout.setOnClickListener {
+            repo.logout()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -67,9 +76,7 @@ class LimpiezaActivity : AppCompatActivity() {
 
     private fun setupTabs() {
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                filtrarTareas(tab?.position ?: 0)
-            }
+            override fun onTabSelected(tab: TabLayout.Tab?) { filtrarTareas(tab?.position ?: 0) }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
@@ -81,30 +88,19 @@ class LimpiezaActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val result = repo.getUsuario(uid)
-            
             withContext(Dispatchers.Main) {
                 if (result.isSuccess) {
                     usuarioActual = result.getOrNull()
-                    if (usuarioActual?.rol == "residente") {
-                        startActivity(Intent(this@LimpiezaActivity, SolicitarLimpiezaActivity::class.java))
-                        finish()
-                        return@withContext
-                    }
-
-                    // Si no vino por intent, usamos el del usuario
                     if (edificioId.isEmpty()) {
                         edificioId = usuarioActual?.edificioId ?: ""
                     }
-
-                    if (edificioId.isNotEmpty()) {
-                        iniciarListener()
-                    } else {
+                    if (edificioId.isNotEmpty()) iniciarListener()
+                    else {
                         binding.progressBar.visibility = View.GONE
-                        Snackbar.make(binding.root, "No se encontró el edificio", Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, "Edificio no configurado", Snackbar.LENGTH_LONG).show()
                     }
                 } else {
                     binding.progressBar.visibility = View.GONE
-                    Snackbar.make(binding.root, "Error: ${result.exceptionOrNull()?.message}", Snackbar.LENGTH_LONG).show()
                 }
             }
         }
@@ -133,7 +129,6 @@ class LimpiezaActivity : AppCompatActivity() {
 
     private fun mostrarDialogoSolicitud() {
         val dialogBinding = DialogTareaLimpiezaBinding.inflate(layoutInflater)
-        
         val areas = listOf("Lobby", "Pasillo", "Estacionamiento", "Jardín", "Elevador", "Cuarto de basura", "Gimnasio", "Alberca", "Otro")
         val tipos = listOf("Barrido", "Trapeado", "Desinfección", "Recolección basura", "Limpieza de vidrios", "General")
         val prioridades = listOf("Baja", "Normal", "Alta")
@@ -145,9 +140,7 @@ class LimpiezaActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Solicitar Limpieza")
             .setView(dialogBinding.root)
-            .setPositiveButton("Enviar") { _, _ ->
-                enviarSolicitud(dialogBinding)
-            }
+            .setPositiveButton("Enviar") { _, _ -> enviarSolicitud(dialogBinding) }
             .setNegativeButton("Cancelar", null)
             .show()
     }
@@ -159,28 +152,17 @@ class LimpiezaActivity : AppCompatActivity() {
         val desc = dialogBinding.etDescripcion.text.toString()
 
         if (edificioId.isEmpty()) return
-        
         CoroutineScope(Dispatchers.IO).launch {
             val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-            
             val nuevaTarea = TareaLimpieza(
-                edificioId = edificioId,
-                area = area,
-                tipoLimpieza = tipo,
-                descripcion = desc,
-                prioridad = prioridad,
-                solicitadaPor = usuarioActual?.nombre ?: "Residente",
-                fechaAsignada = fecha,
-                completada = false
+                edificioId = edificioId, area = area, tipoLimpieza = tipo,
+                descripcion = desc, prioridad = prioridad,
+                solicitadaPor = usuarioActual?.nombre ?: "Admin",
+                fechaAsignada = fecha, completada = false
             )
-
             val exito = repo.crearTareaLimpieza(nuevaTarea)
             withContext(Dispatchers.Main) {
-                if (exito) {
-                    Snackbar.make(binding.root, "Solicitud enviada", Snackbar.LENGTH_SHORT).show()
-                } else {
-                    Snackbar.make(binding.root, "Error al enviar solicitud", Snackbar.LENGTH_SHORT).show()
-                }
+                if (exito) Snackbar.make(binding.root, "Solicitud enviada", Snackbar.LENGTH_SHORT).show()
             }
         }
     }
@@ -189,9 +171,7 @@ class LimpiezaActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Finalizar Tarea")
             .setMessage("¿Deseas marcar esta tarea como completada?")
-            .setPositiveButton("Sí") { _, _ ->
-                completarTarea(tarea)
-            }
+            .setPositiveButton("Sí") { _, _ -> completarTarea(tarea) }
             .setNegativeButton("No", null)
             .show()
     }
@@ -200,9 +180,7 @@ class LimpiezaActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val exito = repo.marcarTareaCompletada(tarea.id, "Completada por ${usuarioActual?.nombre}")
             withContext(Dispatchers.Main) {
-                if (exito) {
-                    Snackbar.make(binding.root, "Tarea finalizada", Snackbar.LENGTH_SHORT).show()
-                }
+                if (exito) Snackbar.make(binding.root, "Tarea finalizada", Snackbar.LENGTH_SHORT).show()
             }
         }
     }
@@ -210,19 +188,12 @@ class LimpiezaActivity : AppCompatActivity() {
     private fun confirmarEliminarTarea(tarea: TareaLimpieza) {
         AlertDialog.Builder(this)
             .setTitle("Eliminar Tarea")
-            .setMessage("¿Estás seguro de que deseas eliminar esta tarea?")
+            .setMessage("¿Estás seguro?")
             .setPositiveButton("Eliminar") { _, _ ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    val exito = repo.eliminarTareaLimpieza(tarea.id)
-                    withContext(Dispatchers.Main) {
-                        if (exito) {
-                            Snackbar.make(binding.root, "Tarea eliminada", Snackbar.LENGTH_SHORT).show()
-                        }
-                    }
+                    repo.eliminarTareaLimpieza(tarea.id)
                 }
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+            .setNegativeButton("Cancelar", null).show()
     }
 }
-

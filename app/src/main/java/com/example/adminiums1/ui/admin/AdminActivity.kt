@@ -17,6 +17,7 @@ import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.auth.LoginActivity
 import com.example.adminiums1.ui.auth.RegistroActivity
 import com.example.adminiums1.ui.limpieza.LimpiezaActivity
+import com.example.adminiums1.ui.residente.EstadoCuentaActivity
 import com.example.adminiums1.utils.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +84,8 @@ class AdminActivity : AppCompatActivity() {
 
         binding.btnAgregarResidente.setOnClickListener {
             val intent = Intent(this, RegistroActivity::class.java)
+            intent.putExtra("MODO_ADMIN", true)
+            intent.putExtra("EDIFICIO_ID_PREV", edificioIdActual)
             startActivity(intent)
         }
 
@@ -120,16 +123,14 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun mostrarMenuEdificio() {
-        val opciones = arrayOf("Cambiar Edificio", "Configuración del Edificio")
+        val opciones = arrayOf("Cambiar Edificio", "Gestionar Todos los Condominios")
         AlertDialog.Builder(this)
-            .setTitle(binding.tvEdificioActual.text)
+            .setTitle("Configuración")
             .setItems(opciones) { _, which ->
                 when (which) {
                     0 -> seleccionarEdificioDialog()
                     1 -> {
-                        val intent = Intent(this, ConfiguracionEdificioActivity::class.java)
-                        intent.putExtra("edificioId", edificioIdActual)
-                        startActivity(intent)
+                        startActivity(Intent(this, ManejoCondominiosActivity::class.java))
                     }
                 }
             }.show()
@@ -143,6 +144,7 @@ class AdminActivity : AppCompatActivity() {
                     val condominios = result.getOrDefault(emptyList())
                     if (condominios.isEmpty()) {
                         Toast.makeText(this@AdminActivity, "No hay condominios registrados", Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this@AdminActivity, ManejoCondominiosActivity::class.java))
                         return@withContext
                     }
                     val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }.toTypedArray()
@@ -174,10 +176,6 @@ class AdminActivity : AppCompatActivity() {
                 val tareasActivas = repo.getTareasLimpiezaActivas(edificioIdActual)
                 
                 withContext(Dispatchers.Main) {
-                    if (resultResidentes.isFailure) {
-                        ErrorHandler.mostrar(this@AdminActivity, resultResidentes.exceptionOrNull()!!, "cargarDashboard")
-                    }
-
                     listaResidentes = residentes
                     adapter.setDatos(residentes)
                     
@@ -207,7 +205,7 @@ class AdminActivity : AppCompatActivity() {
             .setItems(opciones) { _, which ->
                 when (which) {
                     0 -> {
-                        val intent = Intent(this, com.example.adminiums1.ui.residente.EstadoCuentaActivity::class.java)
+                        val intent = Intent(this, EstadoCuentaActivity::class.java)
                         intent.putExtra("uid_residente", u.uid)
                         startActivity(intent)
                     }
@@ -238,7 +236,6 @@ class AdminActivity : AppCompatActivity() {
                         if (exito) {
                             Toast.makeText(this@AdminActivity, "Recordatorio enviado a ${u.nombre}", Toast.LENGTH_SHORT).show()
                         } else {
-                            // Fallback if FCM token is missing
                             val mockIntent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
                                 putExtra(Intent.EXTRA_TEXT, msj)
@@ -257,7 +254,7 @@ class AdminActivity : AppCompatActivity() {
             .setTitle("Eliminar Residente")
             .setMessage("¿Estás seguro de eliminar a ${u.nombre}?")
             .setPositiveButton("Eliminar") { _, _ ->
-                // Lógica de borrado en repo si fuera necesario
+                // Lógica de borrado
             }
             .setNegativeButton("Cancelar", null).show()
     }

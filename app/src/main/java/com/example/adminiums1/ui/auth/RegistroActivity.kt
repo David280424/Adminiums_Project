@@ -6,11 +6,15 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ActivityRegistroBinding
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.model.Condominio
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.residente.ResidenteActivity
+import com.example.adminiums1.ui.admin.AdminActivity
+import com.example.adminiums1.ui.vigilante.VigilanteActivity
+import com.example.adminiums1.ui.limpieza.LimpiezaActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,13 +27,20 @@ class RegistroActivity : AppCompatActivity() {
     
     private var listaCondominios: List<Condominio> = emptyList()
     private var edificioSeleccionadoId: String = ""
+    private var rolSeleccionado: String = "residente"
+    private var isAdminCreating: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Verificamos si quien abre la pantalla es un Admin
+        // Esto lo podemos saber por un extra o checando el rol actual si ya hay sesion
+        checkIfAdmin()
+
         cargarCondominios()
+        setupRolesSpinner()
 
         binding.btnRegistrar.setOnClickListener {
             registrarUsuario()
@@ -44,6 +55,38 @@ class RegistroActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkIfAdmin() {
+        val uid = repo.getCurrentUid()
+        if (uid != null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val result = repo.getUsuario(uid)
+                withContext(Dispatchers.Main) {
+                    val user = result.getOrNull()
+                    if (user?.rol == "admin") {
+                        isAdminCreating = true
+                        binding.layoutSeleccionRol.visibility = View.VISIBLE
+                        binding.tvIrLogin.visibility = View.GONE // No tiene sentido ir al login si ya soy admin
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupRolesSpinner() {
+        val roles = listOf("residente", "vigilante", "limpieza")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, roles)
+        binding.spinnerRoles.setAdapter(adapter)
+        binding.spinnerRoles.setOnItemClickListener { _, _, position, _ ->
+            rolSeleccionado = roles[position]
+            // Si es vigilante o limpieza, tal vez no necesite "Unidad", pero lo dejamos opcional
+            if (rolSeleccionado == "residente") {
+                binding.inputUnidad.hint = "Número de Unidad / Depto"
+            } else {
+                binding.inputUnidad.hint = "Área / Observaciones (Opcional)"
+            }
+        }
+    }
+
     private fun cargarCondominios() {
         CoroutineScope(Dispatchers.IO).launch {
             val result = repo.getCondominios()
@@ -51,7 +94,6 @@ class RegistroActivity : AppCompatActivity() {
                 if (result.isSuccess) {
                     val condominios = result.getOrDefault(emptyList())
                     listaCondominios = condominios
-                    // Para evitar nombres duplicados que confundan, mostramos "Nombre - Ciudad"
                     val nombres = condominios.map { "${it.nombre} (${it.ciudad})" }
                     val adapter = ArrayAdapter(this@RegistroActivity, android.R.layout.simple_dropdown_item_1line, nombres)
                     binding.spinnerEdificios.setAdapter(adapter)
@@ -59,8 +101,6 @@ class RegistroActivity : AppCompatActivity() {
                     binding.spinnerEdificios.setOnItemClickListener { _, _, position, _ ->
                         edificioSeleccionadoId = listaCondominios[position].id
                     }
-                } else {
-                    Toast.makeText(this@RegistroActivity, "Error al cargar edificios: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -77,8 +117,8 @@ class RegistroActivity : AppCompatActivity() {
             Toast.makeText(this, "Selecciona un edificio", Toast.LENGTH_SHORT).show()
             return
         }
-        if (nombre.isEmpty() || email.isEmpty() || pass.isEmpty() || unidad.isEmpty()) {
-            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+        if (nombre.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+            Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show()
             return
         }
         if (pass != confirmPass) {
@@ -99,7 +139,7 @@ class RegistroActivity : AppCompatActivity() {
                         uid = uid,
                         nombre = nombre,
                         email = email,
-                        rol = "residente", // Por defecto siempre es residente
+                        rol = rolSeleccionado,
                         unidad = unidad,
                         edificioId = edificioSeleccionadoId,
                         balance = 0.0
@@ -109,12 +149,18 @@ class RegistroActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     
                     if (firestoreResult.isSuccess) {
-                        Toast.makeText(this@RegistroActivity, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@RegistroActivity, ResidenteActivity::class.java))
-                        finishAffinity()
+                        Toast.makeText(this@RegistroActivity, "Usuario creado exitosamente", Toast.LENGTH_SHORT).show()
+                        
+                        if (isAdminCreating) {
+                            // Si el admin lo creó, solo cerramos esta pantalla para volver al panel
+                            finish()
+                        } else {
+                            // Si fue un registro normal, entramos a la app
+                            navegarSegunRol(nuevoUsuario)
+                        }
                     } else {
                         binding.btnRegistrar.isEnabled = true
-                        Toast.makeText(this@RegistroActivity, "Error al guardar datos: ${firestoreResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@RegistroActivity, "Error al guardar en base de datos", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     binding.progressBar.visibility = View.GONE
@@ -123,5 +169,17 @@ class RegistroActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun navegarSegunRol(usuario: Usuario) {
+        val intent = when (usuario.rol) {
+            "residente" -> Intent(this, ResidenteActivity::class.java)
+            "vigilante" -> Intent(this, VigilanteActivity::class.java)
+            "limpieza" -> Intent(this, LimpiezaActivity::class.java)
+            "admin" -> Intent(this, AdminActivity::class.java)
+            else -> Intent(this, ResidenteActivity::class.java)
+        }
+        startActivity(intent)
+        finishAffinity()
     }
 }
