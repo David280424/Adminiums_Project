@@ -121,7 +121,10 @@ class FirebaseRepository {
             
             if (finalPago.estado == "Aprobado") {
                 db.collection("usuarios").document(pago.residenteUid)
-                    .update("balance", com.google.firebase.firestore.FieldValue.increment(pago.monto))
+                    .update(
+                        "balance", com.google.firebase.firestore.FieldValue.increment(pago.monto),
+                        "proximoPago", 0.0
+                    )
                     .await()
             }
             true
@@ -283,9 +286,11 @@ class FirebaseRepository {
         } catch (e: Exception) { Result.failure(e) }
     }
 
-    suspend fun getAccesosPorFecha(fecha: String): Result<List<RegistroAcceso>> = withContext(Dispatchers.IO) {
+    suspend fun getAccesosPorFecha(fecha: String, edificioId: String = ""): Result<List<RegistroAcceso>> = withContext(Dispatchers.IO) {
         try { 
-            val list = db.collection("accesos").whereEqualTo("fecha", fecha).get().await().toObjects(RegistroAcceso::class.java)
+            var query = db.collection("accesos").whereEqualTo("fecha", fecha)
+            if (edificioId.isNotEmpty()) query = query.whereEqualTo("edificioId", edificioId)
+            val list = query.get().await().toObjects(RegistroAcceso::class.java)
             Result.success(list)
         } catch (e: Exception) { Result.failure(e) }
     }

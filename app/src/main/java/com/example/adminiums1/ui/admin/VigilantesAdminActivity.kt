@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityVigilantesAdminBinding
 import com.example.adminiums1.model.RegistroAcceso
 import com.example.adminiums1.model.Usuario
+import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.adapter.AccesosAdminAdapter
 import com.example.adminiums1.ui.admin.adapter.VigilantesAdapter
 import com.example.adminiums1.utils.ErrorHandler
@@ -20,6 +21,7 @@ class VigilantesAdminActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityVigilantesAdminBinding
     private val db = FirebaseFirestore.getInstance()
+    private val repo = FirebaseRepository()
     private val listeners = mutableListOf<ListenerRegistration>()
 
     private lateinit var vigilantesAdapter: VigilantesAdapter
@@ -27,6 +29,7 @@ class VigilantesAdminActivity : AppCompatActivity() {
 
     // Vigilante seleccionado actualmente
     private var vigilanteSeleccionadoNombre: String = ""
+    private var edificioIdAdmin: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +40,13 @@ class VigilantesAdminActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
+        // REQUIRED FIX — Read edificioId from Intent extra
+        edificioIdAdmin = intent.getStringExtra("edificioId") ?: ""
+
         configurarVigilantes()
         configurarAccesos()
+        
+        // REQUIRED FIX — Call directly, no coroutine needed
         escucharVigilantes()
 
         binding.cardAccesosVigilante.ocultar()
@@ -63,18 +71,31 @@ class VigilantesAdminActivity : AppCompatActivity() {
 
     private fun escucharVigilantes() {
         binding.progressVigilantes.mostrar()
-        val listener = db.collection("usuarios")
-            .whereEqualTo("rol", "vigilante")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) { ErrorHandler.log(error, "VigilantesAdmin"); return@addSnapshotListener }
-                binding.progressVigilantes.ocultar()
-                val lista = snapshot?.documents?.mapNotNull { it.toObject(Usuario::class.java) } ?: emptyList()
-                binding.tvTotalVigilantes.text = "${lista.size} vigilantes activos"
-                vigilantesAdapter.setDatos(lista)
 
-                if (lista.isEmpty()) binding.tvSinVigilantes.mostrar()
-                else binding.tvSinVigilantes.ocultar()
+        // Fallback: if edificioIdAdmin is empty (superadmin), fetch all vigilantes
+        val query = if (edificioIdAdmin.isNotEmpty()) {
+            db.collection("usuarios")
+                .whereEqualTo("rol", "vigilante")
+                .whereEqualTo("edificioId", edificioIdAdmin)
+        } else {
+            db.collection("usuarios")
+                .whereEqualTo("rol", "vigilante")
+        }
+
+        val listener = query.addSnapshotListener { snapshot, error ->
+            if (error != null) { 
+                ErrorHandler.log(error, "VigilantesAdmin")
+                binding.progressVigilantes.ocultar()
+                return@addSnapshotListener 
             }
+            binding.progressVigilantes.ocultar()
+            val lista = snapshot?.documents?.mapNotNull { it.toObject(Usuario::class.java) } ?: emptyList()
+            binding.tvTotalVigilantes.text = "${lista.size} vigilantes activos"
+            vigilantesAdapter.setDatos(lista)
+
+            if (lista.isEmpty()) binding.tvSinVigilantes.mostrar()
+            else binding.tvSinVigilantes.ocultar()
+        }
         listeners.add(listener)
     }
 
@@ -93,7 +114,6 @@ class VigilantesAdminActivity : AppCompatActivity() {
         binding.progressAccesos.mostrar()
         val hoy = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
-        // FIX 2: Muestra accesos del día actual filtrando por el vigilante seleccionado
         db.collection("accesos")
             .whereEqualTo("fecha", hoy)
             .whereEqualTo("vigilanteNombre", nombreVigilante)

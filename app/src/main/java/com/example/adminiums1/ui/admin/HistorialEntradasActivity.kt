@@ -28,6 +28,7 @@ class HistorialEntradasActivity : AppCompatActivity() {
     private var fechaFiltro     = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
     private var residenteFiltro = ""
     private var todosLosAccesos = listOf<RegistroAcceso>()
+    private var edificioIdAdmin: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +38,8 @@ class HistorialEntradasActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
+
+        edificioIdAdmin = intent.getStringExtra("edificioId") ?: ""
 
         configurarLista()
         configurarFiltros()
@@ -104,10 +107,10 @@ class HistorialEntradasActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                // FIX 3: Remove orderBy to avoid requiring composite index
-                val docs = db.collection("accesos")
-                    .whereEqualTo("fecha", fechaFiltro)
-                    .get().await()
+                var query = db.collection("accesos").whereEqualTo("fecha", fechaFiltro)
+                if (edificioIdAdmin.isNotEmpty()) query = query.whereEqualTo("edificioId", edificioIdAdmin)
+                
+                val docs = query.get().await()
 
                 todosLosAccesos = docs.toObjects(RegistroAcceso::class.java)
                     .sortedByDescending { it.timestamp }
@@ -117,7 +120,6 @@ class HistorialEntradasActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
                 binding.progressHistorial.ocultar()
-                // FIX 3: Visible Toast on error
                 Toast.makeText(this@HistorialEntradasActivity, "Error al cargar: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }

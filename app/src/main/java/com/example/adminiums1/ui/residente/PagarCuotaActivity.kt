@@ -4,15 +4,9 @@ import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -44,7 +38,6 @@ class PagarCuotaActivity : AppCompatActivity() {
     private lateinit var adapterHistorial: PagosDetalleAdapter
     
     private var buildingId = ""
-    private var buildingName = ""
     private var residentName = ""
     private var unit = ""
     private var amountBase = 0.0
@@ -93,9 +86,9 @@ class PagarCuotaActivity : AppCompatActivity() {
                 val digits = s.toString().replace(" ", "")
                 if (digits.isNotEmpty()) {
                     if (digits.startsWith("4")) {
-                        binding.etCardNumber.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bg_avatar_blue, 0) // Simular logo Visa
+                        binding.etCardNumber.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bg_avatar_blue, 0)
                     } else if (digits.startsWith("5")) {
-                        binding.etCardNumber.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bg_avatar_red, 0) // Simular logo MC
+                        binding.etCardNumber.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bg_avatar_red, 0)
                     }
                 }
             }
@@ -178,12 +171,48 @@ class PagarCuotaActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 usuarioActual = user
                 user?.let {
+                    val mesActual = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
+                    val yaPagoEsteMes = pagosResult.getOrDefault(emptyList()).any { pago ->
+                        pago.estado == "Aprobado" &&
+                        pago.fecha.length >= 7 &&
+                        pago.fecha.substring(3, 10) == mesActual
+                    }
+
+                    if (yaPagoEsteMes) {
+                        // Show "already paid" screen
+                        binding.viewFlipper.displayedChild = 2
+                        binding.tvReciboFolio.text = "Pago registrado"
+                        binding.tvReciboFecha.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+                        binding.tvReciboResidente.text = it.nombre
+                        binding.tvReciboMonto.text = it.proximoPago.formatearPeso()
+                        binding.tvReciboMetodo.text = "✅ Ya realizaste tu pago de este mes"
+                        binding.tvReciboEstado.text = "AL CORRIENTE"
+                        binding.btnShareRecibo.ocultar()
+                        binding.btnFinalizar.mostrar()
+                        return@withContext
+                    }
+
                     residentName = it.nombre
                     unit = it.unidad
                     buildingId = it.edificioId
                     bankDetails = build?.datosBancarios ?: ""
                     
                     amountBase = it.proximoPago
+                    if (amountBase <= 0.0) {
+                        // Show "Al corriente" state instead of the payment form
+                        binding.viewFlipper.displayedChild = 2
+                        binding.ivCheckAnim.setImageResource(android.R.drawable.checkbox_on_background)
+                        binding.tvReciboFolio.text = "Sin adeudo pendiente"
+                        binding.tvReciboFecha.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+                        binding.tvReciboResidente.text = it.nombre
+                        binding.tvReciboMonto.text = "$ 0.00"
+                        binding.tvReciboMetodo.text = "✅ Estás al corriente este mes"
+                        binding.tvReciboEstado.text = "SIN ADEUDO"
+                        binding.btnShareRecibo.ocultar()
+                        binding.btnFinalizar.mostrar()
+                        return@withContext
+                    }
+
                     amountRecargo = PaymentUtils.calcularRecargo(amountBase, it.fechaVencimiento)
                     amountTotal = amountBase + amountRecargo
 
@@ -240,6 +269,20 @@ class PagarCuotaActivity : AppCompatActivity() {
         binding.progressBar.mostrar()
         
         CoroutineScope(Dispatchers.IO).launch {
+            val mesActual = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
+            val pagosActuales = repo.getHistorialPagosUsuario(uid).getOrDefault(emptyList())
+            val duplicado = pagosActuales.any { it.estado == "Aprobado" && 
+                                                it.fecha.length >= 7 && 
+                                                it.fecha.substring(3, 10) == mesActual }
+            if (duplicado) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.ocultar()
+                    Toast.makeText(this@PagarCuotaActivity, 
+                        "Ya registraste un pago aprobado este mes.", Toast.LENGTH_LONG).show()
+                }
+                return@launch
+            }
+
             val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
             val status = if (selectedMethod == "Tarjeta" || selectedMethod == "OXXO") "Aprobado" else "Pendiente verificación"
             

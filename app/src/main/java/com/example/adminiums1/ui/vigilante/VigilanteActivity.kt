@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityVigilanteBinding
 import com.example.adminiums1.model.RegistroAcceso
 import com.example.adminiums1.model.Usuario
-import com.example.adminiums1.model.Visitante
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.auth.LoginActivity
 import com.example.adminiums1.ui.vigilante.adapter.AccesosAdapter
@@ -33,6 +32,8 @@ class VigilanteActivity : AppCompatActivity() {
     // Residente encontrado en búsqueda manual (pendiente de confirmar)
     private var residenteEncontrado: Usuario? = null
     private var nombreVigilanteActual: String = ""
+    private var edificioIdVigilante: String = ""
+    private var contadorAccesosHoy: Int = 0
 
     private val scanLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
         if (result.contents != null) procesarQRResidente(result.contents)
@@ -45,14 +46,13 @@ class VigilanteActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        cargarNombreVigilante()
         configurarTabs()
         configurarRegistroManual()
         configurarEscaneoQR()
         configurarHistorial()
-        cargarHistorialHoy()
 
-        // ACTUALIZADO: Ahora redirige al Login actualizado
+        binding.btnConfirmarEntrada.isEnabled = false
+
         binding.btnLogout.setOnClickListener {
             repo.logout()
             val intent = Intent(this, LoginActivity::class.java)
@@ -60,6 +60,8 @@ class VigilanteActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        cargarNombreVigilante()
     }
 
     // ── Nombre del vigilante ────────────────────────────────────────────────
@@ -70,8 +72,15 @@ class VigilanteActivity : AppCompatActivity() {
             val result = repo.getUsuario(uid)
             val usuario = result.getOrNull()
             nombreVigilanteActual = usuario?.nombre ?: "Vigilante"
+            edificioIdVigilante   = usuario?.edificioId ?: ""
             binding.tvNombreVigilante.text = nombreVigilanteActual
-            
+
+            binding.btnConfirmarEntrada.isEnabled = true
+
+            // BUG 1 Fix: Initialize counter and load data
+            cargarHistorialHoy()
+            contadorAccesosHoy = 0
+
             if (result.isFailure) {
                 ErrorHandler.mostrar(this@VigilanteActivity, result.exceptionOrNull()!!, "cargarNombreVigilante")
             }
@@ -120,6 +129,43 @@ class VigilanteActivity : AppCompatActivity() {
         binding.btnConfirmarEntrada.setOnClickListener {
             residenteEncontrado?.let { confirmarEntradaManual(it) }
         }
+
+        // Registrar visitante externo manual
+        binding.btnRegistrarVisitante.setOnClickListener {
+            val nombreVisitante = binding.etNombreVisitante.text.toString().trim()
+            if (nombreVisitante.isEmpty()) {
+                Toast.makeText(this, "Ingresa el nombre del visitante", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val ahora = Date()
+            val acceso = RegistroAcceso(
+                residenteUid    = "",
+                residenteNombre = nombreVisitante,
+                unidad          = "Visita",
+                edificioId      = edificioIdVigilante,
+                metodo          = "visitante_manual",
+                tipoPersona     = "visitante",
+                hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
+                fecha           = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ahora),
+                vigilanteNombre = nombreVigilanteActual,
+                timestamp       = ahora.time
+            )
+            CoroutineScope(Dispatchers.Main).launch {
+                val result = repo.registrarAcceso(acceso)
+                result.onSuccess {
+                    binding.etNombreVisitante.setText("")
+                    // BUG 1 Fix: Update UI directly
+                    contadorAccesosHoy++
+                    binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
+                    binding.tvSinAccesos.ocultar()
+
+                    Toast.makeText(this@VigilanteActivity, "✅ Visitante registrado: $nombreVisitante", Toast.LENGTH_SHORT).show()
+                    cargarHistorialHoy()
+                }.onFailure { e ->
+                    ErrorHandler.mostrar(this@VigilanteActivity, e, "registrarVisitanteManual")
+                }
+            }
+        }
     }
 
     private fun buscarResidenteManual(query: String) {
@@ -127,7 +173,7 @@ class VigilanteActivity : AppCompatActivity() {
         binding.cardConfirmarManual.ocultar()
 
         CoroutineScope(Dispatchers.Main).launch {
-            val result = repo.getTodosUsuarios()
+            val result = repo.getResidentesPorEdificio(edificioIdVigilante)
             binding.progressManual.ocultar()
 
             result.onSuccess { residentes ->
@@ -144,8 +190,7 @@ class VigilanteActivity : AppCompatActivity() {
                 } else {
                     residenteEncontrado = null
                     binding.cardConfirmarManual.ocultar()
-                    Toast.makeText(this@VigilanteActivity,
-                        "No se encontró ningún residente con esos datos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@VigilanteActivity, "No se encontró ningún residente con esos datos", Toast.LENGTH_SHORT).show()
                 }
             }.onFailure { e ->
                 ErrorHandler.mostrar(this@VigilanteActivity, e, "buscarResidenteManual")
@@ -163,6 +208,7 @@ class VigilanteActivity : AppCompatActivity() {
                 residenteUid    = residente.uid,
                 residenteNombre = residente.nombre,
                 unidad          = residente.unidad,
+                edificioId      = edificioIdVigilante,
                 metodo          = "manual",
                 hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
                 fecha           = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ahora),
@@ -178,11 +224,12 @@ class VigilanteActivity : AppCompatActivity() {
                 binding.etBuscarManual.setText("")
                 residenteEncontrado = null
 
-                Toast.makeText(this@VigilanteActivity,
-                    "✅ Entrada registrada: ${residente.nombre} — ${acceso.hora}",
-                    Toast.LENGTH_LONG).show()
+                // BUG 1 Fix: Update UI directly
+                contadorAccesosHoy++
+                binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
+                binding.tvSinAccesos.ocultar()
 
-                // Refrescar historial en segundo plano
+                Toast.makeText(this@VigilanteActivity, "✅ Entrada registrada: ${residente.nombre} — ${acceso.hora}", Toast.LENGTH_LONG).show()
                 cargarHistorialHoy()
             }.onFailure { e ->
                 ErrorHandler.mostrar(this@VigilanteActivity, e, "confirmarEntradaManual")
@@ -206,20 +253,14 @@ class VigilanteActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Procesa el QR del residente (formato: "RESIDENTE|uid|nombre|unidad").
-     * Registra la entrada automáticamente sin pasos adicionales.
-     */
     private fun procesarQRResidente(contenido: String) {
         binding.progressQR.mostrar()
         binding.tvResultadoQR.ocultar()
 
         CoroutineScope(Dispatchers.Main).launch {
-            // Formato del QR del residente: "RESIDENTE|uid|nombre|unidad"
             val partes = contenido.split("|")
 
             if (partes.size >= 4 && partes[0] == "RESIDENTE") {
-                // QR de residente → registrar acceso directo
                 val uid    = partes[1]
                 val nombre = partes[2]
                 val unidad = partes[3]
@@ -229,6 +270,7 @@ class VigilanteActivity : AppCompatActivity() {
                     residenteUid    = uid,
                     residenteNombre = nombre,
                     unidad          = unidad,
+                    edificioId      = edificioIdVigilante,
                     metodo          = "qr",
                     tipoPersona     = "residente",
                     hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
@@ -240,33 +282,31 @@ class VigilanteActivity : AppCompatActivity() {
                 binding.progressQR.ocultar()
 
                 result.onSuccess {
-                    mostrarResultadoQR(
-                        exito   = true,
-                        mensaje = "✅ ACCESO REGISTRADO\nResidente: $nombre\nUnidad: $unidad\nHora: ${acceso.hora}"
-                    )
+                    // BUG 1 Fix: Update UI directly
+                    contadorAccesosHoy++
+                    binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
+                    binding.tvSinAccesos.ocultar()
+
+                    mostrarResultadoQR(true, "✅ ACCESO REGISTRADO\nResidente: $nombre\nUnidad: $unidad\nHora: ${acceso.hora}")
                     cargarHistorialHoy()
                 }.onFailure { e ->
                     ErrorHandler.mostrar(this@VigilanteActivity, e, "procesarQRResidente")
                 }
 
             } else {
-                // QR de visitante → flujo anterior de validación
                 val result = repo.validarVisitante(contenido)
                 binding.progressQR.ocultar()
 
                 result.onSuccess { visitante ->
                     if (visitante != null) {
-                        mostrarResultadoQR(
-                            exito   = true,
-                            mensaje = "✅ VISITANTE PERMITIDO\nNombre: ${visitante.nombre}\nAutorizado por: ${visitante.autorizadoPor}\nUnidad: ${visitante.unidad}"
-                        )
+                        mostrarResultadoQR(true, "✅ VISITANTE PERMITIDO\nNombre: ${visitante.nombre}\nAutorizado por: ${visitante.autorizadoPor}\nUnidad: ${visitante.unidad}")
 
-                        // FIX: Registrar el acceso del visitante foráneo
                         val ahora = Date()
                         val accesoVisitante = RegistroAcceso(
                             residenteUid    = "",
                             residenteNombre = "${visitante.nombre} (visitante de ${visitante.autorizadoPor})",
                             unidad          = visitante.unidad,
+                            edificioId      = edificioIdVigilante,
                             metodo          = "visitante_qr",
                             tipoPersona     = "visitante",
                             hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
@@ -275,12 +315,15 @@ class VigilanteActivity : AppCompatActivity() {
                             timestamp       = ahora.time
                         )
                         repo.registrarAcceso(accesoVisitante)
+                        
+                        // Visitor QR also counts as entry
+                        contadorAccesosHoy++
+                        binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
+                        binding.tvSinAccesos.ocultar()
+                        
                         cargarHistorialHoy()
                     } else {
-                        mostrarResultadoQR(
-                            exito   = false,
-                            mensaje = "❌ ACCESO DENEGADO\nCódigo QR inválido o ya utilizado"
-                        )
+                        mostrarResultadoQR(false, "❌ ACCESO DENEGADO\nCódigo QR inválido o ya utilizado")
                     }
                 }.onFailure { e ->
                     ErrorHandler.mostrar(this@VigilanteActivity, e, "validarVisitante")
@@ -292,9 +335,7 @@ class VigilanteActivity : AppCompatActivity() {
     private fun mostrarResultadoQR(exito: Boolean, mensaje: String) {
         binding.tvResultadoQR.mostrar()
         binding.tvResultadoQR.text = mensaje
-        binding.tvResultadoQR.setBackgroundColor(
-            if (exito) 0xFF4CAF50.toInt() else 0xFFF44336.toInt()
-        )
+        binding.tvResultadoQR.setBackgroundColor(if (exito) 0xFF4CAF50.toInt() else 0xFFF44336.toInt())
     }
 
     // ── Tab 3: Historial del día ────────────────────────────────────────────
@@ -314,14 +355,16 @@ class VigilanteActivity : AppCompatActivity() {
         binding.progressHistorial.mostrar()
 
         CoroutineScope(Dispatchers.Main).launch {
-            val result = repo.getAccesosPorFecha(hoy)
+            val result = repo.getAccesosPorFecha(hoy, edificioIdVigilante)
             binding.progressHistorial.ocultar()
 
             result.onSuccess { accesos ->
-                binding.tvTotalEntradas.text = "${accesos.size} entradas registradas"
+                // BUG 1 Fix: Sync counter from loaded data
+                contadorAccesosHoy = accesos.size
+                binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                 accesosAdapter.setDatos(accesos)
 
-                if (accesos.isEmpty()) binding.tvSinAccesos.mostrar()
+                if (contadorAccesosHoy == 0) binding.tvSinAccesos.mostrar()
                 else binding.tvSinAccesos.ocultar()
             }.onFailure { e ->
                 ErrorHandler.mostrar(this@VigilanteActivity, e, "cargarHistorialHoy")

@@ -42,7 +42,24 @@ class AdminActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimaryDark)
 
         setupUI()
-        seleccionarEdificioDialog()
+        
+        // PART 1: Load edificioId context on start. If empty (superadmin), show selection dialog.
+        CoroutineScope(Dispatchers.Main).launch {
+            val uid = repo.getCurrentUid() ?: return@launch
+            val result = repo.getUsuario(uid)
+            val usuario = result.getOrNull()
+            val idPerfil = usuario?.edificioId ?: ""
+            
+            if (idPerfil.isNotEmpty()) {
+                edificioIdActual = idPerfil
+                // If the user has a building assigned, we could fetch its name here
+                val cond = repo.getCondominio(idPerfil)
+                binding.tvEdificioActual.text = cond?.nombre ?: "Mi Edificio"
+                cargarDashboard()
+            } else {
+                seleccionarEdificioDialog()
+            }
+        }
     }
 
     private fun setupUI() {
@@ -65,6 +82,7 @@ class AdminActivity : AppCompatActivity() {
         binding.tvEdificioActual.setOnClickListener { mostrarMenuEdificio() }
 
         binding.btnVerVigilantes.setOnClickListener {
+            // FIX: Pass edificioId context to VigilantesAdminActivity
             val intent = Intent(this, VigilantesAdminActivity::class.java)
             intent.putExtra("edificioId", edificioIdActual)
             startActivity(intent)
@@ -77,6 +95,7 @@ class AdminActivity : AppCompatActivity() {
         }
 
         binding.btnVerHistorial.setOnClickListener {
+            // FIX: Pass edificioId context to HistorialEntradasActivity
             val intent = Intent(this, HistorialEntradasActivity::class.java)
             intent.putExtra("edificioId", edificioIdActual)
             startActivity(intent)

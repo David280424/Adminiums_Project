@@ -14,10 +14,13 @@ import com.example.adminiums1.ui.residente.ResidenteActivity
 import com.example.adminiums1.ui.admin.AdminActivity
 import com.example.adminiums1.ui.vigilante.VigilanteActivity
 import com.example.adminiums1.ui.limpieza.LimpiezaActivity
+import com.example.adminiums1.ui.admin.ConfiguracionEdificioActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class RegistroActivity : AppCompatActivity() {
 
@@ -34,9 +37,7 @@ class RegistroActivity : AppCompatActivity() {
         binding = ActivityRegistroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Verificamos si quien abre la pantalla es un Admin
         checkIfAdmin()
-
         cargarCondominios()
         setupRolesSpinner()
 
@@ -129,28 +130,40 @@ class RegistroActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val authResult = repo.registrarAuth(email, pass)
             
-            if (authResult.isSuccess) {
-                val uid = authResult.getOrNull()!!
-                
-                // FIX 1: Fetch condominio first on IO thread
-                val condominio = repo.getCondominio(edificioSeleccionadoId)
-                val cuotaInicial = condominio?.cuotaBase?.takeIf { it > 0 } ?: 3000.0
+            withContext(Dispatchers.Main) {
+                if (authResult.isSuccess) {
+                    val uid = authResult.getOrNull()!!
+                    
+                    // Logic to set proximoPago based on building cuotaBase
+                    val selectedBuilding = listaCondominios.find { it.id == edificioSeleccionadoId }
+                    var cuota = 0.0
+                    var vencimiento = ""
+                    
+                    if (rolSeleccionado == "residente") {
+                        cuota = if ((selectedBuilding?.cuotaBase ?: 0.0) <= 0.0) {
+                            ConfiguracionEdificioActivity.CUOTA_DEFAULT
+                        } else {
+                            selectedBuilding!!.cuotaBase
+                        }
+                        // Default due date to day 10 of current month
+                        vencimiento = "10/" + SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
+                    }
 
-                val nuevoUsuario = Usuario(
-                    uid = uid,
-                    nombre = nombre,
-                    email = email,
-                    rol = rolSeleccionado,
-                    unidad = unidad,
-                    edificioId = edificioSeleccionadoId,
-                    balance = 0.0,
-                    proximoPago = cuotaInicial
-                )
-                
-                val firestoreResult = repo.crearUsuario(nuevoUsuario)
-                
-                withContext(Dispatchers.Main) {
+                    val nuevoUsuario = Usuario(
+                        uid = uid,
+                        nombre = nombre,
+                        email = email,
+                        rol = rolSeleccionado,
+                        unidad = unidad,
+                        edificioId = edificioSeleccionadoId,
+                        balance = 0.0,
+                        proximoPago = cuota,
+                        fechaVencimiento = vencimiento
+                    )
+                    
+                    val firestoreResult = repo.crearUsuario(nuevoUsuario)
                     binding.progressBar.visibility = View.GONE
+                    
                     if (firestoreResult.isSuccess) {
                         Toast.makeText(this@RegistroActivity, "Usuario creado exitosamente", Toast.LENGTH_SHORT).show()
                         if (isAdminCreating) {
@@ -162,9 +175,7 @@ class RegistroActivity : AppCompatActivity() {
                         binding.btnRegistrar.isEnabled = true
                         Toast.makeText(this@RegistroActivity, "Error al guardar en base de datos", Toast.LENGTH_LONG).show()
                     }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
+                } else {
                     binding.progressBar.visibility = View.GONE
                     binding.btnRegistrar.isEnabled = true
                     Toast.makeText(this@RegistroActivity, "Error: ${authResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()

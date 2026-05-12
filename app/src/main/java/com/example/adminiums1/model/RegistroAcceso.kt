@@ -5,6 +5,7 @@ data class RegistroAcceso(
     val residenteUid   : String = "",
     val residenteNombre: String = "",
     val unidad         : String = "",
+    val edificioId     : String = "",
     val metodo         : String = "",   // "manual" | "qr" | "visitante_qr"
     val hora           : String = "",   // "HH:mm"
     val fecha          : String = "",   // "dd/MM/yyyy"
