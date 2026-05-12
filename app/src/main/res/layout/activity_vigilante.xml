@@ -105,56 +105,13 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="vertical" android:padding="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:background="@drawable/bg_card_border"
-                    android:padding="14dp" android:layout_marginBottom="14dp">
-
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Accesos de hoy" android:textSize="11sp" android:textStyle="bold"
-                        android:textColor="@color/colorTextSecondary" android:layout_marginBottom="10dp"/>
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvAccesosResidentes"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="0" android:textSize="20sp" android:textStyle="bold"
-                                android:textColor="@color/colorTextPrimary"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Residentes" android:textSize="10sp" android:textColor="@color/colorTextSecondary"/>
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvAccesosVisitantes"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="0" android:textSize="20sp" android:textStyle="bold"
-                                android:textColor="@color/colorTextPrimary"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Visitantes" android:textSize="10sp" android:textColor="@color/colorTextSecondary"/>
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvAccesosPendientes"
-                                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="0" android:textSize="20sp" android:textStyle="bold"
-                                android:textColor="@color/colorAmber"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Pendientes" android:textSize="10sp" android:textColor="@color/colorTextSecondary"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="Buscar residente" android:textSize="11sp"
                     android:textColor="@color/colorTextSecondary" android:layout_marginBottom="5dp"/>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
                     <EditText android:id="@+id/etBuscarManual"
                         android:layout_width="0dp" android:layout_height="44dp"
                         android:layout_weight="1"
@@ -166,8 +123,7 @@
 
                     <Button
                         android:id="@+id/btnBuscarManual"
-                        android:layout_width="wrap_content"
-                        android:layout_height="44dp"
+                        android:layout_width="wrap_content" android:layout_height="44dp"
                         android:layout_marginStart="8dp"
                         android:text="Buscar"
                         android:textSize="11sp"

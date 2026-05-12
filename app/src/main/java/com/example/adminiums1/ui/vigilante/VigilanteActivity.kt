@@ -77,7 +77,6 @@ class VigilanteActivity : AppCompatActivity() {
 
             binding.btnConfirmarEntrada.isEnabled = true
 
-            // BUG 1 Fix: Initialize counter and load data
             cargarHistorialHoy()
             contadorAccesosHoy = 0
 
@@ -154,7 +153,6 @@ class VigilanteActivity : AppCompatActivity() {
                 val result = repo.registrarAcceso(acceso)
                 result.onSuccess {
                     binding.etNombreVisitante.setText("")
-                    // BUG 1 Fix: Update UI directly
                     contadorAccesosHoy++
                     binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                     binding.tvSinAccesos.ocultar()
@@ -224,7 +222,6 @@ class VigilanteActivity : AppCompatActivity() {
                 binding.etBuscarManual.setText("")
                 residenteEncontrado = null
 
-                // BUG 1 Fix: Update UI directly
                 contadorAccesosHoy++
                 binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                 binding.tvSinAccesos.ocultar()
@@ -282,7 +279,6 @@ class VigilanteActivity : AppCompatActivity() {
                 binding.progressQR.ocultar()
 
                 result.onSuccess {
-                    // BUG 1 Fix: Update UI directly
                     contadorAccesosHoy++
                     binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                     binding.tvSinAccesos.ocultar()
@@ -316,7 +312,6 @@ class VigilanteActivity : AppCompatActivity() {
                         )
                         repo.registrarAcceso(accesoVisitante)
                         
-                        // Visitor QR also counts as entry
                         contadorAccesosHoy++
                         binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                         binding.tvSinAccesos.ocultar()
@@ -359,7 +354,7 @@ class VigilanteActivity : AppCompatActivity() {
             binding.progressHistorial.ocultar()
 
             result.onSuccess { accesos ->
-                // BUG 1 Fix: Sync counter from loaded data
+                // Sync counter from loaded data
                 contadorAccesosHoy = accesos.size
                 binding.tvTotalEntradas.text = "$contadorAccesosHoy entradas registradas"
                 accesosAdapter.setDatos(accesos)
