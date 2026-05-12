@@ -2,6 +2,7 @@ package com.example.adminiums1.ui.admin
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityPagosEdificioBinding
@@ -36,13 +37,19 @@ class PagosEdificioActivity : AppCompatActivity() {
 
     private fun cargarPagos() {
         CoroutineScope(Dispatchers.IO).launch {
-            val lista = repo.getPagosPorEdificio(edificioId)
+            val result = repo.getPagosPorEdificio(edificioId)
             withContext(Dispatchers.Main) {
-                adapter.setDatos(lista)
-                binding.layoutEmpty.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
-                
-                val totalMes = lista.filter { it.estado == "Aprobado" }.sumOf { it.monto }
-                binding.tvTotalRecaudadoMes.text = "Total recaudado: $ ${"%.2f".format(totalMes)}"
+                if (result.isSuccess) {
+                    val lista = result.getOrDefault(emptyList())
+                    adapter.setDatos(lista)
+                    binding.layoutEmpty.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+                    
+                    val totalMes = lista.filter { it.estado == "Aprobado" }.sumOf { it.monto }
+                    binding.tvTotalRecaudadoMes.text = "Total recaudado: $ ${"%.2f".format(totalMes)}"
+                } else {
+                    Toast.makeText(this@PagosEdificioActivity, "Error al cargar pagos", Toast.LENGTH_SHORT).show()
+                    binding.layoutEmpty.visibility = View.VISIBLE
+                }
             }
         }
     }
