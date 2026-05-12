@@ -9,7 +9,7 @@ import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ItemPagoHistorialBinding
 import com.example.adminiums1.model.Pago
 
-class PagosDetalleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PagosDetalleAdapter(private val onItemClick: (Pago) -> Unit = {}) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var lista: List<Any> = emptyList()
 
     private val VIEW_TYPE_HEADER = 0
@@ -28,7 +28,7 @@ class PagosDetalleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding = ItemPagoHistorialBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return if (viewType == VIEW_TYPE_HEADER) HeaderVH(binding) else PagoVH(binding)
+        return if (viewType == VIEW_TYPE_HEADER) HeaderVH(binding) else PagoVH(binding, onItemClick)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -55,11 +55,16 @@ class PagosDetalleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val params = binding.root.layoutParams as ViewGroup.MarginLayoutParams
             params.setMargins(params.leftMargin, 24, params.rightMargin, 8)
             binding.root.layoutParams = params
+            binding.root.setOnClickListener(null)
         }
     }
 
-    inner class PagoVH(private val binding: ItemPagoHistorialBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class PagoVH(
+        private val binding: ItemPagoHistorialBinding,
+        private val onClick: (Pago) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(pago: Pago) {
+            binding.root.setOnClickListener { onClick(pago) }
             binding.layoutIconMethod.visibility = View.VISIBLE
             binding.tvPagoConcepto.visibility = View.VISIBLE
             binding.tvPagoMonto.visibility = View.VISIBLE
@@ -72,7 +77,6 @@ class PagosDetalleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             params.setMargins(params.leftMargin, 6, params.rightMargin, 6)
             binding.root.layoutParams = params
 
-            // FIX 5: Bind fields using item_pago_historial.xml
             binding.tvPagoFolio.text = if (pago.folio.isEmpty()) "Sin folio" else pago.folio
             binding.tvPagoConcepto.text = if (pago.concepto.isEmpty()) "Cuota mensual" else pago.concepto
             binding.tvPagoMonto.text = "$ ${"%.2f".format(pago.monto)}"

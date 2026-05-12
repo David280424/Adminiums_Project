@@ -59,15 +59,12 @@ class GenerarQRActivity : AppCompatActivity() {
         }
 
         binding.btnCompartir.setOnClickListener {
-            if (qrGenerado.isNotEmpty()) {
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        getString(R.string.compartir_mensaje, qrGenerado)
-                    )
-                }
-                startActivity(Intent.createChooser(shareIntent, getString(R.string.compartir_titulo)))
+            val bmp = bmpQR
+            val nombre = binding.etNombreVisitante.text.toString().trim()
+            if (bmp != null && nombre.isNotEmpty()) {
+                com.example.adminiums1.utils.BitmapUtils.guardarYCompartirQR(this, bmp, nombre)
+            } else {
+                Toast.makeText(this, "Genera el QR antes de compartir", Toast.LENGTH_SHORT).show()
             }
         }
     }

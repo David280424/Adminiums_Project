@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.adminiums1.databinding.ItemCondominioBinding
 import com.example.adminiums1.model.Condominio
 
-class CondominiosAdapter : RecyclerView.Adapter<CondominiosAdapter.VH>() {
+class CondominiosAdapter(private val onDelete: (Condominio) -> Unit) : RecyclerView.Adapter<CondominiosAdapter.VH>() {
     private var lista: List<Condominio> = emptyList()
 
     fun setDatos(nuevaLista: List<Condominio>) {
@@ -29,6 +29,7 @@ class CondominiosAdapter : RecyclerView.Adapter<CondominiosAdapter.VH>() {
         fun bind(item: Condominio) {
             binding.tvNombreCondominio.text = item.nombre
             binding.tvCiudadCondominio.text = item.ciudad
+            binding.btnEliminarCondominio.setOnClickListener { onDelete(item) }
         }
     }
 }

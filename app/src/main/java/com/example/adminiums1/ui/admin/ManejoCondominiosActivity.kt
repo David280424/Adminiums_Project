@@ -32,11 +32,38 @@ class ManejoCondominiosActivity : AppCompatActivity() {
     private fun setupUI() {
         binding.toolbar.setNavigationOnClickListener { finish() }
         
-        adapter = CondominiosAdapter()
+        adapter = CondominiosAdapter { condominio ->
+            confirmarEliminar(condominio)
+        }
         binding.rvCondominios.layoutManager = LinearLayoutManager(this)
         binding.rvCondominios.adapter = adapter
 
         binding.btnAgregarCondominio.setOnClickListener { mostrarDialogAgregar() }
+    }
+
+    private fun confirmarEliminar(condominio: Condominio) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar Condominio")
+            .setMessage("¿Estás seguro de eliminar '${condominio.nombre}'? Esta acción no se puede deshacer.")
+            .setPositiveButton("Eliminar") { _, _ ->
+                eliminarCondominio(condominio.id)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun eliminarCondominio(id: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val exito = repo.eliminarCondominio(id)
+            withContext(Dispatchers.Main) {
+                if (exito) {
+                    Toast.makeText(this@ManejoCondominiosActivity, "Condominio eliminado", Toast.LENGTH_SHORT).show()
+                    cargarCondominios()
+                } else {
+                    Toast.makeText(this@ManejoCondominiosActivity, "Error al eliminar", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun cargarCondominios() {

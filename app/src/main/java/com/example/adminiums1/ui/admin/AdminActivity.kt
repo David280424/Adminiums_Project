@@ -271,9 +271,19 @@ class AdminActivity : AppCompatActivity() {
     private fun confirmarEliminar(u: Usuario) {
         AlertDialog.Builder(this)
             .setTitle("Eliminar Residente")
-            .setMessage("¿Estás seguro de eliminar a ${u.nombre}?")
+            .setMessage("¿Estás seguro de eliminar a ${u.nombre}? Esta acción no se puede deshacer.")
             .setPositiveButton("Eliminar") { _, _ ->
-                // Lógica de borrado
+                CoroutineScope(Dispatchers.IO).launch {
+                    val exito = repo.eliminarUsuario(u.uid)
+                    withContext(Dispatchers.Main) {
+                        if (exito) {
+                            Toast.makeText(this@AdminActivity, "Residente eliminado", Toast.LENGTH_SHORT).show()
+                            cargarDashboard()
+                        } else {
+                            Toast.makeText(this@AdminActivity, "Error al eliminar residente", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
             .setNegativeButton("Cancelar", null).show()
     }

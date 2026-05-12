@@ -30,6 +30,7 @@ class EstadoCuentaActivity : AppCompatActivity() {
     private lateinit var adapter: PagosDetalleAdapter
     private var usuarioCargado: Usuario? = null
     private var listaPagos: List<Pago> = emptyList()
+    private var nombreEdificioCargado: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,13 +46,15 @@ class EstadoCuentaActivity : AppCompatActivity() {
     private fun setupUI() {
         binding.toolbar.setNavigationOnClickListener { finish() }
         
-        adapter = PagosDetalleAdapter()
+        adapter = PagosDetalleAdapter { pago ->
+            PdfGenerator.generarReciboPagoPDF(this, pago)
+        }
         binding.rvHistorialPagos.layoutManager = LinearLayoutManager(this)
         binding.rvHistorialPagos.adapter = adapter
 
         binding.btnDownloadPdf.setOnClickListener {
             usuarioCargado?.let { user ->
-                PdfGenerator.generarEstadoCuentaPDF(this, user, listaPagos)
+                PdfGenerator.generarEstadoCuentaPDF(this, user, listaPagos, nombreEdificioCargado)
             }
         }
     }
@@ -75,6 +78,7 @@ class EstadoCuentaActivity : AppCompatActivity() {
 
                 user?.let { u ->
                     val nombreEdificio = buildResult?.nombre ?: u.edificioId
+                    nombreEdificioCargado = nombreEdificio
                     binding.tvResidenteNombre.text = u.nombre
                     binding.tvResidenteUnidadEdificio.text = "${u.unidad} - $nombreEdificio"
                     

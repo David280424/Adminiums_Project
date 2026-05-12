@@ -295,5 +295,23 @@ class FirebaseRepository {
         } catch (e: Exception) { Result.failure(e) }
     }
 
-    suspend fun solicitarNotificacionDeuda(usuario: Usuario, mensaje: String): Boolean = true
+    suspend fun solicitarNotificacionDeuda(usuario: Usuario, mensaje: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            if (usuario.fcmToken.isEmpty()) return@withContext false
+            
+            val notificacion = mapOf(
+                "token" to usuario.fcmToken,
+                "titulo" to "Recordatorio de Pago",
+                "mensaje" to mensaje,
+                "uid" to usuario.uid,
+                "timestamp" to System.currentTimeMillis(),
+                "procesado" to false
+            )
+            
+            db.collection("notificaciones_pendientes").add(notificacion).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

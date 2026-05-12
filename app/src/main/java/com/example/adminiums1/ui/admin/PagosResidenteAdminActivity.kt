@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.adminiums1.databinding.ActivityPagosResidenteAdminBinding
 import com.example.adminiums1.repository.FirebaseRepository
 import com.example.adminiums1.ui.admin.adapter.PagosDetalleAdapter
+import com.example.adminiums1.utils.PdfGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +30,9 @@ class PagosResidenteAdminActivity : AppCompatActivity() {
         binding.toolbar.title = "Pagos: $nombre"
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        adapter = PagosDetalleAdapter()
+        adapter = PagosDetalleAdapter { pago ->
+            PdfGenerator.generarReciboPagoPDF(this, pago)
+        }
         binding.rvPagos.layoutManager = LinearLayoutManager(this)
         binding.rvPagos.adapter = adapter
 
