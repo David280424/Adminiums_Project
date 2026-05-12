@@ -68,6 +68,7 @@
 
         <!-- LIMPIEZA -->
         <activity android:name=".ui.limpieza.LimpiezaActivity" android:exported="false" />
+        <activity android:name=".ui.limpieza.SolicitarLimpiezaActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
 
     </application>
 </manifest>
