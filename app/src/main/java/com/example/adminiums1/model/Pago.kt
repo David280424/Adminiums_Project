@@ -17,5 +17,7 @@ data class Pago(
     val folio: String = "",
     val estado: String = "",           // "Aprobado", "Pendiente verificación", "Rechazado"
     val comprobante: String = "",      // reservado para URL foto futura
-    val timestamp: Long = 0L
+    val timestamp: Long = 0L,
+    val esCuota: Boolean = false,      // true si es un pago parcial/cuota
+    val numeroCuota: Int = 1           // número de cuota (1, 2, 3)
 )

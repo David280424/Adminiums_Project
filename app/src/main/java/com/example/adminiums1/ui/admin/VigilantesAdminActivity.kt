@@ -93,11 +93,10 @@ class VigilantesAdminActivity : AppCompatActivity() {
         binding.progressAccesos.mostrar()
         val hoy = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
-        // Muestra accesos del día actual del vigilante seleccionado
-        // Los accesos se registran en "accesos" con el campo "registradoPor"
-        // Si no existe ese campo todavía, muestra todos los accesos de hoy
+        // FIX 2: Muestra accesos del día actual filtrando por el vigilante seleccionado
         db.collection("accesos")
             .whereEqualTo("fecha", hoy)
+            .whereEqualTo("vigilanteNombre", nombreVigilante)
             .get()
             .addOnSuccessListener { snapshot ->
                 binding.progressAccesos.ocultar()

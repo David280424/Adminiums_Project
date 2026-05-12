@@ -42,15 +42,28 @@ class TareaLimpiezaAdapter(
             binding.tvTipoLimpieza.text = tarea.tipoLimpieza
             binding.tvAsignadaA.text = if (tarea.asignadaA.isEmpty()) "Sin asignar" else "Asignada a: ${tarea.asignadaA}"
             binding.tvSolicitadaPor.text = "Solicitado por: ${tarea.solicitadaPor}"
-            binding.chipFechaLimite.text = tarea.fechaLimite
+            binding.chipFechaLimite.text = if (tarea.completada) "COMPLETADA" else tarea.fechaLimite
             
-            // Color de prioridad
-            val color = when (tarea.prioridad) {
-                "Alta" -> R.color.colorEstadoPendiente
-                "Normal" -> R.color.colorEstadoEnProceso
-                else -> R.color.colorTextTertiary
+            // Color de prioridad o estado completado
+            val color = if (tarea.completada) {
+                // Color verde para completada
+                0xFF2ECC71.toInt() 
+            } else {
+                when (tarea.prioridad) {
+                    "Alta" -> ContextCompat.getColor(binding.root.context, R.color.colorEstadoPendiente)
+                    "Normal" -> ContextCompat.getColor(binding.root.context, R.color.colorEstadoEnProceso)
+                    else -> ContextCompat.getColor(binding.root.context, R.color.colorTextTertiary)
+                }
             }
-            binding.viewPrioridad.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
+            binding.viewPrioridad.setBackgroundColor(color)
+            
+            // Si está completada, podemos atenuar el fondo o poner un borde verde
+            if (tarea.completada) {
+                binding.root.alpha = 0.8f
+                binding.tvAreaNombre.append(" ✅")
+            } else {
+                binding.root.alpha = 1.0f
+            }
 
             binding.btnDelete.visibility = if (isUserAdmin) View.VISIBLE else View.GONE
             binding.btnDelete.setOnClickListener { onDeleteClick(tarea) }

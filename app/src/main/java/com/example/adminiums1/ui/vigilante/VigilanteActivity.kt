@@ -32,6 +32,7 @@ class VigilanteActivity : AppCompatActivity() {
 
     // Residente encontrado en búsqueda manual (pendiente de confirmar)
     private var residenteEncontrado: Usuario? = null
+    private var nombreVigilanteActual: String = ""
 
     private val scanLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
         if (result.contents != null) procesarQRResidente(result.contents)
@@ -68,7 +69,8 @@ class VigilanteActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val result = repo.getUsuario(uid)
             val usuario = result.getOrNull()
-            binding.tvNombreVigilante.text = usuario?.nombre ?: "Vigilante"
+            nombreVigilanteActual = usuario?.nombre ?: "Vigilante"
+            binding.tvNombreVigilante.text = nombreVigilanteActual
             
             if (result.isFailure) {
                 ErrorHandler.mostrar(this@VigilanteActivity, result.exceptionOrNull()!!, "cargarNombreVigilante")
@@ -164,6 +166,7 @@ class VigilanteActivity : AppCompatActivity() {
                 metodo          = "manual",
                 hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
                 fecha           = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ahora),
+                vigilanteNombre = nombreVigilanteActual,
                 timestamp       = ahora.time
             )
             val result = repo.registrarAcceso(acceso)
@@ -227,8 +230,10 @@ class VigilanteActivity : AppCompatActivity() {
                     residenteNombre = nombre,
                     unidad          = unidad,
                     metodo          = "qr",
+                    tipoPersona     = "residente",
                     hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
                     fecha           = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ahora),
+                    vigilanteNombre = nombreVigilanteActual,
                     timestamp       = ahora.time
                 )
                 val result = repo.registrarAcceso(acceso)
@@ -255,6 +260,22 @@ class VigilanteActivity : AppCompatActivity() {
                             exito   = true,
                             mensaje = "✅ VISITANTE PERMITIDO\nNombre: ${visitante.nombre}\nAutorizado por: ${visitante.autorizadoPor}\nUnidad: ${visitante.unidad}"
                         )
+
+                        // FIX: Registrar el acceso del visitante foráneo
+                        val ahora = Date()
+                        val accesoVisitante = RegistroAcceso(
+                            residenteUid    = "",
+                            residenteNombre = "${visitante.nombre} (visitante de ${visitante.autorizadoPor})",
+                            unidad          = visitante.unidad,
+                            metodo          = "visitante_qr",
+                            tipoPersona     = "visitante",
+                            hora            = SimpleDateFormat("HH:mm", Locale.getDefault()).format(ahora),
+                            fecha           = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ahora),
+                            vigilanteNombre = nombreVigilanteActual,
+                            timestamp       = ahora.time
+                        )
+                        repo.registrarAcceso(accesoVisitante)
+                        cargarHistorialHoy()
                     } else {
                         mostrarResultadoQR(
                             exito   = false,

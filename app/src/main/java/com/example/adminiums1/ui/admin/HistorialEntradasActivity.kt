@@ -2,14 +2,12 @@ package com.example.adminiums1.ui.admin
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adminiums1.databinding.ActivityHistorialEntradasBinding
 import com.example.adminiums1.model.RegistroAcceso
-import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.ui.admin.adapter.AccesosAdminAdapter
-import com.example.adminiums1.utils.ErrorHandler
 import com.example.adminiums1.utils.mostrar
 import com.example.adminiums1.utils.ocultar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -106,18 +104,21 @@ class HistorialEntradasActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
+                // FIX 3: Remove orderBy to avoid requiring composite index
                 val docs = db.collection("accesos")
                     .whereEqualTo("fecha", fechaFiltro)
-                    .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
                     .get().await()
 
                 todosLosAccesos = docs.toObjects(RegistroAcceso::class.java)
+                    .sortedByDescending { it.timestamp }
+                
                 binding.progressHistorial.ocultar()
                 aplicarFiltros()
 
             } catch (e: Exception) {
                 binding.progressHistorial.ocultar()
-                ErrorHandler.log(e, "HistorialEntradas:cargar")
+                // FIX 3: Visible Toast on error
+                Toast.makeText(this@HistorialEntradasActivity, "Error al cargar: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

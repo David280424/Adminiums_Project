@@ -20,11 +20,15 @@ class AccesosAdminAdapter : RecyclerView.Adapter<AccesosAdminAdapter.VH>() {
     inner class VH(private val b: ItemAccesoBinding) : RecyclerView.ViewHolder(b.root) {
         fun bind(a: RegistroAcceso) {
             b.tvAccesoNombre.text = a.residenteNombre
-            b.tvAccesoUnidad.text = "Unidad: ${a.unidad}"
+            // FIX 4: Update tvAccesoUnidad to show context
+            b.tvAccesoUnidad.text = if (a.tipoPersona == "visitante") "Visitante ext. — ${a.unidad}" else "Unidad: ${a.unidad}"
             b.tvAccesoHora.text   = a.hora
+            b.tvVigilanteNombre.text = if (a.vigilanteNombre.isNotEmpty()) "Vigilante: ${a.vigilanteNombre}" else "Registro automático"
+
             val (icono, color) = when (a.metodo) {
                 "qr"     -> "📱 QR"     to 0xFF2D3748.toInt()
                 "manual" -> "✋ Manual" to 0xFF4A5568.toInt()
+                "visitante_qr" -> "🚶 Visitante" to 0xFF6B46C1.toInt()
                 else     -> "•"         to 0xFF718096.toInt()
             }
             b.tvAccesoMetodo.text = icono

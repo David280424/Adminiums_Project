@@ -267,6 +267,18 @@
                         android:layout_height="wrap_content" android:text="$0.00"
                         android:textSize="12sp" android:textStyle="bold" android:textColor="@color/colorError"/>
                 </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="0.5dp"
+                    android:background="@color/colorBorderTertiary"/>
+
+                <TextView android:id="@+id/tvVerEstadoCuenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ver historial de pagos →"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorResidente"
+                    android:textStyle="bold"
+                    android:padding="14dp"/>
             </LinearLayout>
 
         </LinearLayout>

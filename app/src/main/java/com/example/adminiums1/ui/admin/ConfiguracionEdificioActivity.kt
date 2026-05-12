@@ -20,6 +20,10 @@ class ConfiguracionEdificioActivity : AppCompatActivity() {
     private var edificioId: String = ""
     private var condominioActual: Condominio? = null
 
+    companion object {
+        const val CUOTA_DEFAULT = 3000.0
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityConfiguracionEdificioBinding.inflate(layoutInflater)
@@ -38,6 +42,9 @@ class ConfiguracionEdificioActivity : AppCompatActivity() {
             return
         }
 
+        // Set default hint
+        binding.etCuotaBase.hint = CUOTA_DEFAULT.toString()
+
         cargarDatos()
 
         binding.btnGuardarConfig.setOnClickListener {
@@ -54,7 +61,10 @@ class ConfiguracionEdificioActivity : AppCompatActivity() {
                     binding.etNombreEdificio.setText(cond.nombre)
                     binding.etDireccion.setText(cond.direccion)
                     binding.etCiudad.setText(cond.ciudad)
-                    binding.etCuotaBase.setText(cond.cuotaBase.toString())
+                    
+                    // FIX 1: Show "3000.0" as hint/text if cuotaBase is 0.0
+                    binding.etCuotaBase.setText(if (cond.cuotaBase == 0.0) "3000.0" else cond.cuotaBase.toString())
+                    
                     binding.etTotalUnidades.setText(cond.totalUnidades.toString())
                     binding.etDatosBancarios.setText(cond.datosBancarios)
                 } else {
@@ -68,7 +78,10 @@ class ConfiguracionEdificioActivity : AppCompatActivity() {
         val nombre = binding.etNombreEdificio.text.toString().trim()
         val direccion = binding.etDireccion.text.toString().trim()
         val ciudad = binding.etCiudad.text.toString().trim()
-        val cuotaBase = binding.etCuotaBase.text.toString().toDoubleOrNull() ?: 0.0
+        
+        // Use CUOTA_DEFAULT as default if input is empty or invalid
+        val cuotaBase = binding.etCuotaBase.text.toString().toDoubleOrNull() ?: CUOTA_DEFAULT
+
         val totalUnidades = binding.etTotalUnidades.text.toString().toIntOrNull() ?: 0
         val datosBancarios = binding.etDatosBancarios.text.toString().trim()
 

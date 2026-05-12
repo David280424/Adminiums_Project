@@ -130,20 +130,22 @@ class FirebaseRepository {
 
     suspend fun getHistorialPagosUsuario(uid: String): Result<List<Pago>> = withContext(Dispatchers.IO) {
         try {
+            // FIX 2: Remove orderBy to avoid requiring composite index
             val list = db.collection("pagos")
                 .whereEqualTo("residenteUid", uid)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get().await().toObjects(Pago::class.java)
+                .sortedByDescending { it.timestamp }
             Result.success(list)
         } catch (e: Exception) { Result.failure(e) }
     }
 
     suspend fun getPagosPorEdificio(edificioId: String): Result<List<Pago>> = withContext(Dispatchers.IO) {
         try {
+            // FIX 2: Remove orderBy to avoid requiring composite index
             val list = db.collection("pagos")
                 .whereEqualTo("edificioId", edificioId)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get().await().toObjects(Pago::class.java)
+                .sortedByDescending { it.timestamp }
             Result.success(list)
         } catch (e: Exception) { Result.failure(e) }
     }

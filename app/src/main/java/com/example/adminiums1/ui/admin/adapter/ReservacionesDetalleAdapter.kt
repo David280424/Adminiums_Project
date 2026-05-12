@@ -27,6 +27,7 @@ class ReservacionesDetalleAdapter(
     inner class VH(private val b: ItemReservacionDetalleBinding) : RecyclerView.ViewHolder(b.root) {
         fun bind(r: Reservacion) {
             b.tvResAmenidad.text = r.amenidad
+            b.tvResResidente.text = "${r.residenteNombre} (${r.unidad})"
             b.tvResFecha.text = "${r.fecha} ${r.horario}"
             
             b.root.setOnClickListener { onItemClick?.invoke(r) }

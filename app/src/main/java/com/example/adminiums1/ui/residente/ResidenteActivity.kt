@@ -2,9 +2,7 @@ package com.example.adminiums1.ui.residente
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.adminiums1.R
@@ -18,9 +16,9 @@ import com.example.adminiums1.ui.auth.LoginActivity
 import com.example.adminiums1.repository.FirebaseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ResidenteActivity : AppCompatActivity() {
 
@@ -52,6 +50,11 @@ class ResidenteActivity : AppCompatActivity() {
         
         binding.qaCardPagar.setOnClickListener {
             startActivity(Intent(this, PagarCuotaActivity::class.java))
+        }
+
+        // FIX 2: Wire the new button
+        binding.tvVerEstadoCuenta.setOnClickListener {
+            startActivity(Intent(this, EstadoCuentaActivity::class.java))
         }
 
         binding.btnMiQR.setOnClickListener {
@@ -98,13 +101,20 @@ class ResidenteActivity : AppCompatActivity() {
                     binding.tvBalanceAcumulado.text = it.balance.formatearPeso()
                     binding.tvCuotaMensual.text = it.proximoPago.formatearPeso()
 
+                    // FIX 3: Show current month and due date status on the card
+                    val mesActual = SimpleDateFormat("MMMM yyyy", Locale("es", "MX"))
+                        .format(Date()).replaceFirstChar { char -> if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString() }
+                    
+                    val estadoVencimiento = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
+                    binding.tvProximoPagoFecha.text = "$mesActual  •  $estadoVencimiento"
+
                     val dias = PaymentUtils.calcularDiasRestantes(it.fechaVencimiento)
                     val totalAPagar = it.proximoPago + PaymentUtils.calcularRecargo(it.proximoPago, it.fechaVencimiento)
                     binding.tvProximoPago.text = "${totalAPagar.formatearPeso()} pendiente"
 
                     if (it.balance < 0 || dias < 0) {
                         binding.tvFechaVencimiento.mostrar()
-                        binding.tvFechaVencimiento.text = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
+                        binding.tvFechaVencimiento.text = estadoVencimiento
                         binding.tvBalance.setTextColor(ContextCompat.getColor(this@ResidenteActivity, R.color.colorRed))
                     } else {
                         binding.tvFechaVencimiento.mostrar()

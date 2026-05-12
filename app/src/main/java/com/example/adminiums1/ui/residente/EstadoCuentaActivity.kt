@@ -1,6 +1,5 @@
 package com.example.adminiums1.ui.residente
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -63,27 +62,33 @@ class EstadoCuentaActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val userResult = repo.getUsuario(uid)
+            val user = userResult.getOrNull()
             val pagosResult = repo.getHistorialPagosUsuario(uid)
+            // FIX 4: Fetch building name
+            val buildResult = user?.let { repo.getCondominio(it.edificioId) }
             
             withContext(Dispatchers.Main) {
                 binding.progressBar.ocultar()
-                val user = userResult.getOrNull()
                 val pagos = pagosResult.getOrDefault(emptyList())
                 usuarioCargado = user
                 listaPagos = pagos
 
-                user?.let {
-                    binding.tvResidenteNombre.text = it.nombre
-                    binding.tvResidenteUnidadEdificio.text = "${it.unidad} - ${it.edificioId}"
-                    binding.tvBalanceMonto.text = it.balance.formatearPeso()
-                    binding.tvBalanceMonto.setTextColor(if (it.balance >= 0) ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorSuccess) else ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorError))
+                user?.let { u ->
+                    val nombreEdificio = buildResult?.nombre ?: u.edificioId
+                    binding.tvResidenteNombre.text = u.nombre
+                    binding.tvResidenteUnidadEdificio.text = "${u.unidad} - $nombreEdificio"
+                    
+                    binding.tvBalanceMonto.text = u.balance.formatearPeso()
+                    binding.tvBalanceMonto.setTextColor(if (u.balance >= 0) ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorSuccess) else ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorError))
 
-                    binding.tvProximaCuotaMonto.text = it.proximoPago.formatearPeso()
+                    binding.tvProximaCuotaMonto.text = u.proximoPago.formatearPeso()
                     
-                    val estado = PaymentUtils.obtenerEstadoVencimiento(it.fechaVencimiento)
-                    binding.chipFechaVencimiento.text = estado
+                    val mesActual = SimpleDateFormat("MMMM yyyy", Locale("es", "MX"))
+                        .format(Date()).replaceFirstChar { it.uppercase() }
+                    val estado = PaymentUtils.obtenerEstadoVencimiento(u.fechaVencimiento)
+                    binding.chipFechaVencimiento.text = "$mesActual • $estado"
                     
-                    if (PaymentUtils.calcularDiasRestantes(it.fechaVencimiento) < 0) {
+                    if (PaymentUtils.calcularDiasRestantes(u.fechaVencimiento) < 0) {
                         binding.chipFechaVencimiento.setChipBackgroundColorResource(R.color.colorErrorBg)
                         binding.chipFechaVencimiento.setTextColor(ContextCompat.getColor(this@EstadoCuentaActivity, R.color.colorError))
                     } else {
@@ -96,7 +101,33 @@ class EstadoCuentaActivity : AppCompatActivity() {
                 }
 
                 binding.tvFechaGeneracion.text = "Generado el: ${SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())}"
-                adapter.setDatos(pagos)
+                
+                // Grouping history by month
+                if (pagos.isNotEmpty()) {
+                    val grouped = mutableListOf<Any>()
+                    val pagosOrdenados = pagos.sortedByDescending { it.timestamp }
+                    val porMes = pagosOrdenados.groupBy { it.fecha.substring(3, 10) } // "MM/yyyy"
+                    
+                    porMes.forEach { (mesAnio, pagosMes) ->
+                        try {
+                            val parts = mesAnio.split("/")
+                            val cal = Calendar.getInstance().apply {
+                                set(Calendar.DAY_OF_MONTH, 1)
+                                set(Calendar.MONTH, parts[0].toInt() - 1)
+                                set(Calendar.YEAR, parts[1].toInt())
+                            }
+                            val nombreMes = SimpleDateFormat("MMMM yyyy", Locale("es", "MX"))
+                                .format(cal.time).replaceFirstChar { it.uppercase() }
+                            grouped.add(nombreMes)
+                        } catch (e: Exception) {
+                            grouped.add(mesAnio)
+                        }
+                        grouped.addAll(pagosMes)
+                    }
+                    adapter.setDatos(grouped)
+                } else {
+                    adapter.setDatos(emptyList())
+                }
             }
         }
     }

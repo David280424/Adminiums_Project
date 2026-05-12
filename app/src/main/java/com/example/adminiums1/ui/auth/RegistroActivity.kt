@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.adminiums1.R
 import com.example.adminiums1.databinding.ActivityRegistroBinding
 import com.example.adminiums1.model.Usuario
 import com.example.adminiums1.model.Condominio
@@ -36,7 +35,6 @@ class RegistroActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Verificamos si quien abre la pantalla es un Admin
-        // Esto lo podemos saber por un extra o checando el rol actual si ya hay sesion
         checkIfAdmin()
 
         cargarCondominios()
@@ -65,7 +63,7 @@ class RegistroActivity : AppCompatActivity() {
                     if (user?.rol == "admin") {
                         isAdminCreating = true
                         binding.layoutSeleccionRol.visibility = View.VISIBLE
-                        binding.tvIrLogin.visibility = View.GONE // No tiene sentido ir al login si ya soy admin
+                        binding.tvIrLogin.visibility = View.GONE
                     }
                 }
             }
@@ -78,7 +76,6 @@ class RegistroActivity : AppCompatActivity() {
         binding.spinnerRoles.setAdapter(adapter)
         binding.spinnerRoles.setOnItemClickListener { _, _, position, _ ->
             rolSeleccionado = roles[position]
-            // Si es vigilante o limpieza, tal vez no necesite "Unidad", pero lo dejamos opcional
             if (rolSeleccionado == "residente") {
                 binding.inputUnidad.hint = "Número de Unidad / Depto"
             } else {
@@ -132,37 +129,42 @@ class RegistroActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val authResult = repo.registrarAuth(email, pass)
             
-            withContext(Dispatchers.Main) {
-                if (authResult.isSuccess) {
-                    val uid = authResult.getOrNull()!!
-                    val nuevoUsuario = Usuario(
-                        uid = uid,
-                        nombre = nombre,
-                        email = email,
-                        rol = rolSeleccionado,
-                        unidad = unidad,
-                        edificioId = edificioSeleccionadoId,
-                        balance = 0.0
-                    )
-                    
-                    val firestoreResult = repo.crearUsuario(nuevoUsuario)
+            if (authResult.isSuccess) {
+                val uid = authResult.getOrNull()!!
+                
+                // FIX 1: Fetch condominio first on IO thread
+                val condominio = repo.getCondominio(edificioSeleccionadoId)
+                val cuotaInicial = condominio?.cuotaBase?.takeIf { it > 0 } ?: 3000.0
+
+                val nuevoUsuario = Usuario(
+                    uid = uid,
+                    nombre = nombre,
+                    email = email,
+                    rol = rolSeleccionado,
+                    unidad = unidad,
+                    edificioId = edificioSeleccionadoId,
+                    balance = 0.0,
+                    proximoPago = cuotaInicial
+                )
+                
+                val firestoreResult = repo.crearUsuario(nuevoUsuario)
+                
+                withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
-                    
                     if (firestoreResult.isSuccess) {
                         Toast.makeText(this@RegistroActivity, "Usuario creado exitosamente", Toast.LENGTH_SHORT).show()
-                        
                         if (isAdminCreating) {
-                            // Si el admin lo creó, solo cerramos esta pantalla para volver al panel
                             finish()
                         } else {
-                            // Si fue un registro normal, entramos a la app
                             navegarSegunRol(nuevoUsuario)
                         }
                     } else {
                         binding.btnRegistrar.isEnabled = true
                         Toast.makeText(this@RegistroActivity, "Error al guardar en base de datos", Toast.LENGTH_LONG).show()
                     }
-                } else {
+                }
+            } else {
+                withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
                     binding.btnRegistrar.isEnabled = true
                     Toast.makeText(this@RegistroActivity, "Error: ${authResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()

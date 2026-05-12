@@ -51,6 +51,15 @@
                 android:text="Unidad: 101"
                 android:textSize="12sp"
                 android:textColor="@color/colorTextSecondary"/>
+
+            <TextView
+                android:id="@+id/tvVigilanteNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Por: Vigilante"
+                android:textSize="11sp"
+                android:textColor="@color/colorTextTertiary"
+                android:layout_marginTop="2dp"/>
         </LinearLayout>
 
         <!-- Hora -->

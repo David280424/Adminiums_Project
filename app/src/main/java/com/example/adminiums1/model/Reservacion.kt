@@ -6,6 +6,7 @@ data class Reservacion(
     val residenteUid: String = "",
     val residenteNombre: String = "",
     val unidad: String = "",
+    val edificioId: String = "",
     val fecha: String = "",
     val horario: String = "",
     val timestamp: Long = 0L

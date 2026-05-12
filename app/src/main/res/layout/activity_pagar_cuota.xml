@@ -191,6 +191,70 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- FIX 3: Opciones de Pago (Completo o Cuotas) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardOpcionesPago"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="¿Cómo deseas pagar?"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="8dp"/>
+                            <RadioGroup
+                                android:id="@+id/rgOpcionesPago"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                                <RadioButton
+                                    android:id="@+id/rbPagoCompleto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Pago completo"
+                                    android:checked="true"/>
+                                <RadioButton
+                                    android:id="@+id/rbPagoCuotas"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Pagar por cuotas"/>
+                            </RadioGroup>
+                            <LinearLayout
+                                android:id="@+id/layoutDetalleCuotas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone"
+                                android:layout_marginTop="8dp">
+                                <TextView
+                                    android:id="@+id/tvInfoCuotas"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/colorTextSecondary"/>
+                            </LinearLayout>
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipAlertaMinCuota"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cuota mínima: $500.00"
+                                android:textColor="@color/colorError"
+                                app:chipBackgroundColor="@color/colorErrorBg"
+                                android:visibility="gone"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

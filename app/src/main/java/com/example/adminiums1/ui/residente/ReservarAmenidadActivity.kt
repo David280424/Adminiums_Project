@@ -161,6 +161,7 @@ class ReservarAmenidadActivity : AppCompatActivity() {
                     residenteUid    = uid,
                     residenteNombre = usuario?.nombre ?: "",
                     unidad          = usuario?.unidad ?: "",
+                    edificioId      = usuario?.edificioId ?: "",
                     fecha           = fechaSeleccionada,
                     horario         = horario,
                     timestamp       = System.currentTimeMillis()
